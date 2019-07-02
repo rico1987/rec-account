@@ -1,0 +1,94 @@
+@font-face {
+    font-family: 'SourceHanSansCN-Regular';
+    src: url("../../../assets/font/SourceHanSansCN-Regular.woff") format("woff"), url("../../../assets/font/SourceHanSansCN-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+* {
+    margin: 0;
+    padding: 0;
+    font-family: SourceHanSansCN-Regular, Avenir, Helvetica;
+}
+
+body {
+    background-color: $body-bg;
+    color: $body-color;
+    border: 1px solid white;
+}
+#app{
+    padding: $body-padding;
+}
+
+.el-form {
+    width: 100%;
+    .el-form-item{
+        .el-form-item__content{
+            .el-input{
+                input{
+                    padding: 0;
+                    border: none;
+                    background: transparent;
+                    border-bottom: 1px solid #535353;
+                    color: #DDDDDD;
+                }
+                &.el-input--suffix{
+                    width: 120px;
+                }
+                .el-input-group__prepend{
+                    background: transparent;
+                    border: none;
+                    .el-select{
+                        .el-input{
+                            &.is-focus {
+                                .el-input__inner{
+                                    border-color: #535353;
+                                }
+                            }
+                        }
+                    }
+                }
+                .el-input-group__append{
+                    background: transparent;
+                    border: none;
+                    border-bottom: 1px solid #535353;
+                    .eye-closed {
+                        cursor: pointer;
+                        display: inline-block;
+                        width: 33px;
+                        height: 33px;
+                        background: url('../../../assets/img/eye-closed.svg') center no-repeat;
+                        &:hover {
+                            background-image: url('../../../assets/img/eye-closed-active.svg');
+                        }
+                    }
+                    .eye-open {
+                        cursor: pointer;
+                        display: inline-block;
+                        width: 33px;
+                        height: 33px;
+                        background: url('../../../assets/img/eye-open.svg') center no-repeat;
+                        &:hover {
+                            background-image: url('../../../assets/img/eye-open-active.svg');
+                        }
+                    }
+                    .get-captcha-btn{
+                        color: $primary;
+                        .btn{
+                            cursor: pointer;
+                        }
+                    }
+                }
+                
+            }
+        }
+        &.is-error{
+            input {
+                border-bottom-color: $red!important;
+            }
+        }
+    }
+}
+
+.el-message {
+    left: 450px;
+}

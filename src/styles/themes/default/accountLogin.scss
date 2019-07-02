@@ -1,0 +1,51 @@
+@import "../../mixins/bem.scss";
+@import "variables.scss";
+
+@include b(account-login) {
+    @include e(switcher){
+        margin-top: 31px;
+    }
+
+    @include e(container) {
+        width: 340px;
+        margin: 0 auto;
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            margin: 47px 0 26px;
+            color: #999999;
+        }
+
+        @include e(links) {
+            margin-top: 19px;
+            display: flex;
+            justify-content: space-between;
+            span{
+                font-size: 12px;
+                color: $primary;
+                cursor: pointer;
+                &:hover{
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        @include e(submit-btn) {
+            background-color: $primary;
+            color: white;
+            height: 40px;
+            border-radius: 6px;
+            margin-top: 50px;
+            cursor: pointer;
+            p{
+                text-align: center;
+                line-height: 40px;
+                font-size: 16px;
+            }
+            &:hover {
+                background-color: $primary-light-2;
+            }
+        }
+    }
+
+}

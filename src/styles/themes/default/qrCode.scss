@@ -1,0 +1,29 @@
+@import "../../mixins/bem.scss";
+@import "variables.scss";
+
+@include b(qr-code) {
+
+    @include e(switcher){
+        margin-top: 31px;
+    }
+
+    @include e(container) {
+        h2 {
+            font-size: 16px;
+            text-align: center;
+            margin: 47px 0 26px;
+        }
+
+        @include e(qr-code) {
+            width: 252px;
+            height: 252px;
+            margin: 0 auto;
+            border: 4px solid #aaaaaa;
+            background-color: white;
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+}

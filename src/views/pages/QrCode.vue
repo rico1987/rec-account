@@ -1,0 +1,78 @@
+<template>
+    <div class="account-qr-code">
+        <Switcher></Switcher>
+        <div class="account-qr-code__container">
+            <h2>微信扫码，关注公众号登录</h2>
+            <div class="account-qr-code__qr-code" v-loading.lock="loading">
+                <img :src="qrcodeUrl" />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Switcher from '@/components/Switcher.vue';
+import { getQrCode, queryLoginState } from '@/api/account';
+
+export default {
+    name: 'qrCode',
+    components: {
+        Switcher,
+    },
+    data() {
+        return {
+            loading: false,
+            qrcodeUrl: null,
+            qrcodeKey: null,
+            loadingErr: null,
+            queryInterval: null,
+        };
+    },
+
+    created: function() {
+        this.getQrcode();
+    },
+    methods: {
+        getQrcode: function() {
+            this.loading = true;
+            getQrCode(this.$i18n.locale)
+                .then((res) => {
+                    this.loading = false;
+                    if (res.data.data && res.data.data.url) {
+                        this.qrcodeUrl = res.data.data.url;
+                        this.qrcodeKey = res.data.data.key;
+                        this.queryLoginState();
+                    }
+                });
+        },
+
+        queryLoginState: function() {
+            if (this.queryInterval) {
+                window.clearInterval(this.queryInterval);
+                this.queryInterval = null;
+            }
+            const postData = {
+                qrcode_key: this.qrcodeKey,
+                language: this.$i18n.locale,
+            };
+            this.queryInterval = window.setInterval(async () => {
+                let { data } = await queryLoginState(postData);
+                if (data.status === '1' && data.data && data.data.identity_token) {
+                    this.$store.dispatch('SyncLoginState', data)
+                        .then(() => {
+                            window.clearInterval(this.queryInterval);
+                            this.queryInterval = null;
+                            this.$nextTick(() => {
+                                this.$router.push({ path: '/account-info', });
+                            });
+                        })
+                        .catch(() => {
+
+                        });
+                }
+            }, 1000);
+        },
+        
+    },
+};
+</script>
