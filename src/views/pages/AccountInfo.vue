@@ -18,9 +18,9 @@
                             <el-dropdown-item>
                                 <div @click="openChangePassword()">Change Password</div>
                             </el-dropdown-item>
-                            <el-dropdown-item v-if="!isActivated">
+                            <!-- <el-dropdown-item v-if="!isActivated">
                                 <div @click="openActivate()">Activate</div>
-                            </el-dropdown-item>
+                            </el-dropdown-item> -->
                             <el-dropdown-item>
                                 <div @click="logout()">Log out</div>
                             </el-dropdown-item>
@@ -50,16 +50,16 @@
                         </tr>
                         <tr v-if="isNearlyExpired">
                             <td colspan="2">
-                                <button @click="onClickBuy()">Renew VIP</button>
+                                <span class="primary-btn" @click="onClickBuy()">Renew VIP</span>
                             </td>
                         </tr>
                         <tr v-if="!isActivated">
                             <td>&nbsp;</td>
                             <td v-if="language === 'zh'">
-                                <button @click="onClickBuy()">Upgrade to VIP</button>
+                                <span class="primary-btn" @click="onClickBuy()">Upgrade to VIP</span>
                             </td>
                             <td v-if="language !== 'zh'">
-                                <button @click="openActivate()">Activate</button>
+                                <span class="primary-btn" @click="openActivate()">Activate</span>
                             </td>
                         </tr>
                     </table>

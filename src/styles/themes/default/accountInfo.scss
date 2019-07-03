@@ -44,7 +44,25 @@
                 .el-dropdown-link{
                     font-size: 20px;
                     color: #aaa;
-                }
+				}
+				td {
+					.primary-btn{
+						display: inline-block;
+						height: 30px;
+						padding: 0 15px;
+						font-size: 16px;
+						line-height: 30px;
+		                margin-top: 10px;
+		                text-align: center;
+						background: $primary;
+						color: white;
+						cursor: pointer;
+						border-radius: 4px;
+						&:hover{
+							background: $primary-light-3;
+						}
+					}
+				}
                 td.title{
                     text-align: right;
                 }
