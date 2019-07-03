@@ -62,6 +62,12 @@ export function InvokeApp(action, obj, cb, scope) {
 
 export function InvokeDebug(data) {
     InvokeApp('debug', {
-        data: data,
+        data: JSON.stringify(data),
+    });
+}
+
+export function openUrl(url) {
+    InvokeApp('open-file', {
+        file: url,
     });
 }

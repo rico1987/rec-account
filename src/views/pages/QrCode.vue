@@ -1,6 +1,6 @@
 <template>
     <div class="account-qr-code">
-        <Switcher></Switcher>
+        <Switcher class="account-qr-code__switcher"></Switcher>
         <div class="account-qr-code__container">
             <h2>微信扫码，关注公众号登录</h2>
             <div class="account-qr-code__qr-code" v-loading.lock="loading">
@@ -25,7 +25,6 @@ export default {
             qrcodeUrl: null,
             qrcodeKey: null,
             loadingErr: null,
-            queryInterval: null,
         };
     },
 
@@ -47,27 +46,25 @@ export default {
         },
 
         queryLoginState: function() {
-            if (this.queryInterval) {
-                window.clearInterval(this.queryInterval);
-                this.queryInterval = null;
+            if (this.GLOBAL.queryInterval) {
+                window.clearInterval(this.GLOBAL.queryInterval);
+                this.GLOBAL.queryInterval = null;
             }
             const postData = {
                 qrcode_key: this.qrcodeKey,
                 language: this.$i18n.locale,
             };
-            this.queryInterval = window.setInterval(async () => {
+            this.GLOBAL.queryInterval = window.setInterval(async () => {
                 let { data } = await queryLoginState(postData);
                 if (data.status === '1' && data.data && data.data.identity_token) {
                     this.$store.dispatch('SyncLoginState', data)
                         .then(() => {
-                            window.clearInterval(this.queryInterval);
-                            this.queryInterval = null;
-                            this.$nextTick(() => {
-                                this.$router.push({ path: '/account-info', });
-                            });
+                            window.clearInterval(this.GLOBAL.queryInterval);
+                            this.GLOBAL.queryInterval = null;
+                            this.$router.push({ path: '/account-info', });
                         })
-                        .catch(() => {
-
+                        .catch((error) => {
+                            this.InvokeDebug(error);
                         });
                 }
             }, 1000);

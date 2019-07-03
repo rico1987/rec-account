@@ -3,6 +3,9 @@
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import {
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
     Form,
     FormItem,
     Input,
@@ -44,6 +47,9 @@ Vue.use(VueI18n);
 
 // element components
 Vue.use(Loading.directive);
+Vue.use(Dropdown);
+Vue.use(DropdownItem);
+Vue.use(DropdownMenu);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Input);
@@ -52,6 +58,8 @@ Vue.use(Option);
 
 Vue.prototype.$message = Message;
 
+Vue.prototype.GLOBAL = {};
+
 Vue.prototype.InvokeApp = InvokeApp;
 
 Vue.prototype.InvokeDebug = InvokeDebug;
@@ -59,8 +67,12 @@ Vue.prototype.InvokeDebug = InvokeDebug;
 // 拉取软件信息
 
 InvokeApp('get-passport-info', {}, (res) => {
-    console.log(res);
+    store.dispatch('setAppInfo', res && res.data.app_info);
 });
+
+InvokeDebug(window.localStorage);
+window.localStorage.setItem('test', {a: 1});
+InvokeDebug(window.localStorage.getItem('test'));
 
 let lang = getQueryValue('lang') || 'zh';
 

@@ -1,6 +1,6 @@
 <template>
     <div class="account-account-login">
-        <Switcher></Switcher>
+        <Switcher class="account-account-login__switcher"></Switcher>
         <div class="account-account-login__container">
             <h2>登录</h2>
             <el-form ref="accountLoginForm" :model="accountLoginForm" :rules="rules">

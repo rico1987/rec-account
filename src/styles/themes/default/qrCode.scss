@@ -4,7 +4,9 @@
 @include b(qr-code) {
 
     @include e(switcher){
-        margin-top: 31px;
+        position: absolute;
+        top: 31px;
+        left: 15px;
     }
 
     @include e(container) {

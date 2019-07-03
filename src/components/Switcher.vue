@@ -33,6 +33,10 @@ export default {
     methods: {
         switchLoginMethod: function() {
             if (this.$route.path === '/qrcode') {
+                if (this.GLOBAL.queryInterval) {
+                    window.clearInterval(this.GLOBAL.queryInterval);
+                    this.GLOBAL.queryInterval = null;
+                }
                 this.$router.push('/account-login');
             } else {
                 this.$router.push('/qrcode');

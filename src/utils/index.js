@@ -1,4 +1,5 @@
 import * as is from './is';
+import { InvokeDebug } from './invoke';
 
 export function trim(str) {
     return str.replace(/^\s*/, '').replace(/\s*$/, '');
@@ -367,4 +368,56 @@ export function getDomain(lang) {
     let dotcom = langDomainMappings[lang] || `.${lang}`;
 
     return `https://www.apowersoft${dotcom}`;
+}
+
+// 根据identity_token最后一位判断登陆来源
+// * 1 手机验证码
+// * 2 手机密码
+// * 3 邮箱验证码
+// * 4 邮箱密码
+// * 5 qq
+// * 6 weibo
+// * 7 微信
+// * 8 微信服务号
+// * 9 钉钉
+// * a google
+// * b facebook
+// * c twitter
+export function getAccountPreByIdentityToken(identity_token) {
+    let accountPre;
+    switch (identity_token[identity_token.length - 1]) {
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        accountPre = '';
+        break;
+        case '5':
+        accountPre = 'QQ-';
+        break;
+        case '6':
+        accountPre = 'Weibo-';
+        break;
+        case '7':
+        accountPre = 'WeChat-';
+        break;
+        case '8':
+        accountPre = 'WeChatS-';
+        break;
+        case '9':
+        accountPre = 'DingTalk-';
+        break;
+        case 'a':
+        accountPre = 'Google-';
+        break;
+        case 'b':
+        accountPre = 'Facebook-';
+        break;
+        case 'c':
+        accountPre = 'Twitter';
+        break;
+        default:
+        accountPre = '';
+    }
+    return accountPre;
 }

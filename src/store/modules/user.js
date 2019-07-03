@@ -3,6 +3,7 @@ import { login, registerByEmail, registerByPhone, resetPassword, passwordLessLog
 import { getUnlimitedVipInfo, } from '@/api/support';
 import Store from '@/utils/storage';
 import { InvokeApp } from '@/utils/invoke';
+import { InvokeDebug } from '../../utils/invoke';
 
 const user = {
     state: {
@@ -49,7 +50,11 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
                         Store.set('userInfo', data.data.user);
-                        InvokeApp();
+                        InvokeApp('update-passport-info', {
+                            'data': {
+                                user_info: data.data.user,
+                            },
+                        });
                         resolve();
                     } else {
                         reject(data.status);
@@ -182,6 +187,8 @@ const user = {
                 Store.remove('identity_token');
                 Store.remove('userInfo');
                 Store.remove('license_info');
+                InvokeApp('update-passport-info', {'data': {}});
+                InvokeApp('update-app-passport-info', {'data': {}});
                 resolve();
             });
         },
@@ -197,7 +204,7 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-                        Store.set('userInfo', JSON.stringify(data.data.user));
+                        Store.set('userInfo', data.data.user);
                         resolve();
                     } else {
                         reject(data.status);
@@ -216,7 +223,7 @@ const user = {
                     commit('SET_USER_INFO', data.data.user);
                     Store.set('api_token', data.data.api_token);
                     Store.set('identity_token', data.data.identity_token);
-                    Store.set('userInfo', JSON.stringify(data.data.user));
+                    Store.set('userInfo', data.data.user);
                     resolve();
                 } else {
                     reject();

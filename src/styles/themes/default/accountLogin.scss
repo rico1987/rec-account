@@ -2,8 +2,11 @@
 @import "variables.scss";
 
 @include b(account-login) {
+    
     @include e(switcher){
-        margin-top: 31px;
+        position: absolute;
+        top: 31px;
+        left: 15px;
     }
 
     @include e(container) {
@@ -12,7 +15,7 @@
         h2 {
             font-size: 24px;
             text-align: center;
-            margin: 47px 0 26px;
+            margin: 27px 0 26px;
             color: #999999;
         }
 

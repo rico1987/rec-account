@@ -10,7 +10,7 @@ const Store = {
     },
 
     set: function(key, value) {
-        window.localStorage.setItem(key, value);
+        window.localStorage.setItem(key, JSON.stringify(value));
     },
 
     remove: function(key) {
