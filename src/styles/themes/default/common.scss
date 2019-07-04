@@ -15,7 +15,8 @@ body {
     background-color: $body-bg;
     color: $body-color;
     overflow: hidden;
-    position: relative;
+	position: relative;
+	border: 1px solid white;
 }
 #app{
     padding: $body-padding;

@@ -59,3 +59,6 @@ export function submitTicket(postData) {
     return supportFetch.post('/account', qs.stringify(postData));
 }
 
+export function queryOrderStatus() {
+
+}

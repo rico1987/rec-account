@@ -22,8 +22,8 @@ export default new Router({
             name: 'register',
             component: Register,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -31,8 +31,8 @@ export default new Router({
             name: 'qrcode',
             component: QrCode,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -40,8 +40,8 @@ export default new Router({
             name: 'accountLogin',
             component: AccountLogin,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -49,8 +49,8 @@ export default new Router({
             name: 'resetPassword',
             component: ResetPassword,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -58,8 +58,8 @@ export default new Router({
             name: 'passwordLessLogin',
             component: PasswordLessLogin,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -67,8 +67,8 @@ export default new Router({
             name: 'accountInfo',
             component: AccountInfo,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -76,8 +76,8 @@ export default new Router({
             name: 'activate',
             component: Activate,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
         {
@@ -85,8 +85,8 @@ export default new Router({
             name: 'buy',
             component: Buy,
             meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
+                bodyWidth: '630px',
+                bodyHeight: '393px',
             },
         },
     ],

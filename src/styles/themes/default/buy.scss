@@ -6,14 +6,14 @@
         display: flex;
         justify-content: center;
         .type-switcher{
-            margin-top: 11px;
+            margin-top: 0;
             color: #999999;
             position: relative;
             span{
                 display: inline-block;
-                font-size: 24px;
-                padding: 0 22px 10px;
-                width: 48px;
+                font-size: 16px;
+                padding: 0 17px 8px;
+                width: 32px;
                 cursor: pointer;
                 &.active {
                     color: $primary;
@@ -24,7 +24,7 @@
                 left: 0;
                 bottom: 0;
                 height: 2px;
-                width: 92px;
+                width: 64px;
                 background-color: $primary;
                 transition: all .5s ease-out;
                 &.left {
@@ -38,7 +38,7 @@
     }
 
     @include e(license-container) {
-        margin: 18px 13px 0;
+        margin: 13px 0 0;
 
         .license-types{
             display: flex;
@@ -46,16 +46,29 @@
             align-items: center;
 
             >div {
-                width: 200px;
-                height: 174px;
+                width: 140px;
+                height: 122px;
                 background-color: #333333;
                 box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.5);
                 cursor: pointer;
                 &.active {
                     background-color: black;
-                    width: 194px;
-                    height: 168px;
-                    border: 3px solid $primary;
+                    width: 134px;
+                    height: 116px;
+					border: 3px solid $primary;
+					position: relative;
+					&::after{
+						content: '';
+						width: 0;
+						height: 0;
+						width: 33px;
+						height: 35px;
+						right: 0;
+						bottom: 0;
+						position: absolute;
+						background: url('../../../assets/img/corner-active.png') center no-repeat;
+						background-size: cover;
+					}
                 }
 
                 &.hot {
@@ -66,12 +79,13 @@
                             content: '';
                             width: 0;
                             height: 0;
-                            width: 19px;
-                            height: 24px;
-                            left: 17px;
+                            width: 13px;
+                            height: 17px;
+                            right: 30px;
                             top: 7px;
                             position: absolute;
-                            transform: rotate(119deg);
+							background: url('../../../assets/img/fire.svg') center no-repeat;
+							background-size: cover;
                         }
                     }
                 }
@@ -79,47 +93,83 @@
                     box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 1);
                 }
                 .title{
-                    margin: 23px auto 29px;
+                    margin: 16px auto 20px;
                     text-align: center;
-                    font-size: 22px;
-                    line-height: 22px;
+                    font-size: 15px;
+                    line-height: 15px;
                     color: white;
                 }
                 .price {
                     text-align: center;
-                    height: 36px;
+                    height: 19px;
                     position: relative;
-                    left: 13%;
+                    left: 6%;
                     >span{
-                        line-height: 36px;
+                        line-height: 19px;
                         display: inline-block;
-                        height: 36px;
+                        height: 19px;
                     }
                     .currency {
                         color: #F7BB5A;
-                        font-size: 16px;
+                        font-size: 9px;
                     }
                     .number {
                         color: #F7BB5A;
-                        font-size: 36px;
+                        font-size: 19px;
                     }
                     .original {
                         color: #999999;
                         text-decoration: line-through;
-                        font-size: 16px;
+                        font-size: 9px;
                     }
                 }
                 .limit {
                     text-align: center;
-                    font-size: 18px;
-                    line-height: 18px;
-                    margin-top: 33px;
+                    font-size: 14px;
+                    line-height: 14px;
+                    margin-top: 27px;
                     span{
                         color: white;
                     }
                 }
             }
         }
-    }
+	}
+	
+	@include e(pay-container) {
+		margin-top: 25px;
+		display: flex;
+		.pay-method{
+			flex: 0.146;
+			p{
+				font-size: 14px;
+				line-height: 14px;
+				padding-top: 15px;
+				padding-bottom: 15px;
+				padding-left: 38px;
+				cursor: pointer;
+				&.weixin{
+					background: url('../../../assets/img/pay/weixin.svg') 12px center no-repeat;
+					background-size: 21%;
+				}
+				&.alipay{
+					background: url('../../../assets/img/pay/zhifubao.svg') 12px center no-repeat;
+					background-size: 21%;
+				}
+				&.active {
+					cursor: auto;
+					background-color: #333333;
+				}
+			}
+		}
+		.qrcode-container{
+			flex: 0.854;
+			height: 171px;
+			background-color: #333333;
+			.el-loading-mask{
+				background: transparent;
+			}
+		}
+	}
 
 }

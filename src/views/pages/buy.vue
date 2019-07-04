@@ -32,12 +32,32 @@
                 </div>
             </div>
             <div class="license-types" v-if="currentType === 'business'">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
+                <div class="lifetime active hot">
+                    <p class="title">终身</p>
+                    <p class="price"><span class="currency">￥</span><span class="number">199</span><span class="original">￥499</span></p>
+                    <p class="limit"><span>2</span>台电脑</p>
+                </div>
+                <div class="year">
+                    <p class="title">终身</p>
+                    <p class="price"><span class="currency">￥</span><span class="number">199</span><span class="original">￥499</span></p>
+                    <p class="limit"><span>2</span>台电脑</p>
+                </div>
+                <div class="quarter">
+                    <p class="title">终身</p>
+                    <p class="price"><span class="currency">￥</span><span class="number">199</span><span class="original">￥499</span></p>
+                    <p class="limit"><span>2</span>台电脑</p>
+                </div>
             </div>
         </div>
+		<div class="account-buy__pay-container">
+			<div class="pay-method">
+				<p class="weixin" @click="switchPayMethod('weixin')" :class="{'active': payMethod === 'weixin'}">微信</p>
+				<p class="alipay" @click="switchPayMethod('alipay')" :class="{'active': payMethod === 'alipay'}">支付宝</p>
+			</div>
+			<div class="qrcode-container" v-loading.lock="loading">
+				<img :src="qrcodeUrl" />
+			</div>
+		</div>
     </div>
 </template>
 
@@ -53,25 +73,33 @@ export default {
         return {
             loading: false,
             productInfo: null,
-            currentType: 'personal',  // 'personal', 'business'
+			currentType: 'personal',  // 'personal', 'business'
+			payMethod: 'weixin', // 'weixin', 'alipay'
+			qrCodeUrl: null,
         };
     },
 
     created: function() {
-        this.getProductsInfo();
+		this.getProductsInfo();
+		this.getQrCode();
     },
     methods: {
 
         switchType: function(type) {
-            this.currentType = type;
-        },
+			this.currentType = type;
+			this.getQrCode();
+		},
+		
+		switchPayMethod: function(method) {
+			this.payMethod = method;
+			this.getQrCode();
+		},
 
         getProductsInfo: function() {
             axios.get(queryUrl)
                 .then((res) => {
                     if (res.status === 200) {
                         this.productInfo = res.data;
-                        console.log(this.productInfo);
                     } else {
                         this.$message.error('获取产品信息失败!');
                     }
@@ -82,7 +110,7 @@ export default {
         },
 
         getQrCode: function() {
-
+			this.loading = true;
         },
     },
 };
