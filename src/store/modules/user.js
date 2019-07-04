@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { login, registerByEmail, registerByPhone, resetPassword, passwordLessLogin, loginByToken, } from '@/api/account';
+import { login, register, resetPassword, passwordLessLogin, loginByToken, } from '@/api/account';
 import { getUnlimitedVipInfo, } from '@/api/support';
 import Store from '@/utils/storage';
 import { InvokeApp } from '@/utils/invoke';
@@ -89,10 +89,10 @@ const user = {
                 });
             });
         },
-        // 邮箱注册
-        EmailRegister({ commit, }, registerInfo) {
+
+        Register({ commit, }, registerInfo) {
             return new Promise((resolve, reject) => {
-                registerByEmail(registerInfo).then((response) => {
+                register(registerInfo).then((response) => {
                     const data = response.data;
                     if (data && data.status === '1') {
                         commit('SET_API_TOKEN', data.data.api_token);
@@ -101,6 +101,11 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
                         Store.set('userInfo', data.data.user);
+                        InvokeApp('update-passport-info', {
+                            'data': {
+                                user_info: data.data.user,
+                            },
+                        });
                         resolve();
                     } else {
                         reject(data.status);
@@ -110,27 +115,7 @@ const user = {
                 });
             });
         },
-        // 手机注册
-        PhoneRegister({ commit, }, registerInfo) {
-            return new Promise((resolve, reject) => {
-                registerByPhone(registerInfo).then((response) => {
-                    const data = response.data;
-                    if (data && data.status === '1') {
-                        commit('SET_API_TOKEN', data.data.api_token);
-                        commit('SET_IDENTITY_TOKEN', data.data.identity_token);
-                        commit('SET_USER_INFO', data.data.user);
-                        Store.set('api_token', data.data.api_token);
-                        Store.set('identity_token', data.data.identity_token);
-                        Store.set('userInfo', data.data.user);
-                        resolve();
-                    } else {
-                        reject(data.status);
-                    }
-                }).catch((error) => {
-                    reject(error);
-                });
-            });
-        },
+        
         // 重置密码
         ResetPassword({ commit, }, postData) {
             return new Promise((resolve, reject) => {

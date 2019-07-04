@@ -19,17 +19,20 @@
                 <p @click="submit()">登录</p>
             </div>
         </div>
+        <ThirdParty class="account-account-login__third-party"></ThirdParty>
     </div>
 </template>
 
 <script>
 import Switcher from '@/components/Switcher.vue';
+import ThirdParty from '@/components/ThirdParty.vue';
 import { isEmail } from '@/utils/is';
 
 export default {
     name: 'accountLogin',
     components: {
         Switcher,
+        ThirdParty,
     },
     data() {
         return {

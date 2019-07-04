@@ -35,6 +35,7 @@ body {
                     padding: 0;
                     border: none;
                     background: transparent;
+                    border-radius: 0;
                     border-bottom: 1px solid #535353;
                     color: #DDDDDD;
                 }
@@ -98,4 +99,33 @@ body {
 
 .el-message {
     left: 450px;
+}
+.el-dropdown-menu__item {
+    &:hover{
+        background: red;
+        color: $primary!important;
+    }
+}
+.menu-account, .menu-change-password, .menu-logout {
+    padding-left: 30px;
+    background-position: 0 45%;
+    background-repeat: no-repeat;
+}
+.menu-account {
+    background-image: url('../../../assets/img/account.svg');
+    &:hover{
+        background-image: url('../../../assets/img/account-active.svg');
+    }
+}
+.menu-change-password {
+    background-image: url('../../../assets/img/lock.svg');
+    &:hover{
+        background-image: url('../../../assets/img/lock-active.svg');
+    }
+}
+.menu-logout {
+    background-image: url('../../../assets/img/out.svg');
+    &:hover{
+        background-image: url('../../../assets/img/out-active.svg');
+    }
 }

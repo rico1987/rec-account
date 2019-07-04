@@ -1,16 +1,16 @@
 <template>
-    <div class="account-password-less-login">
-        <Switcher class="account-password-less-login__switcher"></Switcher>
-        <div class="account-password-less-login__container">
-            <h2>免密码登录</h2>
-            <div class="account-password-less-login__way-switcher">
+    <div class="account-register">
+        <Switcher class="account-register__switcher"></Switcher>
+        <div class="account-register__container">
+            <h2>注册</h2>
+            <div class="account-register__way-switcher">
                 <span class="phone" @click="switchLoginWay('phone')" v-bind:class="{ active: activeWay === 'phone' }"></span>
                 <span class="email" @click="switchLoginWay('email')" v-bind:class="{ active: activeWay === 'email' }"></span>
             </div>
-            <el-form ref="passwordLessLoginForm" :model="passwordLessLoginForm" :rules="rules">
+            <el-form ref="registerForm" :model="registerForm" :rules="rules">
                 <el-form-item ref="phone" prop="phone" v-show="activeWay === 'phone'">
-                    <el-input placeholder="请输入手机号" v-model="passwordLessLoginForm.phone">
-                        <el-select v-model="passwordLessLoginForm.areaCode" slot="prepend" filterable placeholder="请选择">
+                    <el-input placeholder="请输入手机号" v-model="registerForm.phone">
+                        <el-select v-model="registerForm.areaCode" slot="prepend" filterable placeholder="请选择">
                             <el-option
                             v-for="item in areacodes"
                             :key="item.key"
@@ -23,11 +23,11 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item ref="email" prop="email" v-show="activeWay === 'email'">
-                    <el-input placeholder="邮箱" minlength="6" maxlength="50" v-model="passwordLessLoginForm.email">
+                    <el-input placeholder="邮箱" minlength="6" maxlength="50" v-model="registerForm.email">
                     </el-input>
                 </el-form-item>
                 <el-form-item ref="captcha" prop="captcha">
-                    <el-input placeholder="验证码" minlength="6" maxlength="10" v-model="passwordLessLoginForm.captcha">
+                    <el-input placeholder="验证码" minlength="6" maxlength="10" v-model="registerForm.captcha">
                         <span class="get-captcha-btn" slot="append" >
                             <span v-if="activeWay === 'phone'">
                                 <span v-if="phoneTimeOutInterval">{{ phoneTimeOutCount }}</span>
@@ -40,32 +40,36 @@
                         </span>
                     </el-input>
                 </el-form-item>
+                <el-form-item ref="password" prop="password">
+                    <el-input placeholder="密码" :type="passwordType" minlength="6" maxlength="50" v-model="registerForm.password">
+                        <span v-bind:class="passwordAppendClass" slot="append" @click="switchPasswordType()"></span>
+                    </el-input>
+                </el-form-item>
             </el-form>
-            <div class="account-password-less-login__links">
-                <span></span>
-                <span @click="goto('/account-login')">账号密码登陆</span>
-            </div>
-            <div class="account-password-less-login__submit-btn">
+            <div class="account-register__submit-btn">
                 <p @click="submit()">确认</p>
             </div>
+            <ThirdParty class="account-register__third-party" style="margin-top: 60px;"></ThirdParty>
         </div>
     </div>
 </template>
 
 <script>
 import Switcher from '@/components/Switcher.vue';
+import ThirdParty from '@/components/ThirdParty.vue';
 import { getAreaCodes, sendVcode } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
 
 export default {
-    name: 'resetPassword',
+    name: 'register',
     components: {
         Switcher,
+        ThirdParty,
     },
     data() {
 
         var validatePhone = (rule, value, callback) => {
-            if (!value || !this.passwordLessLoginForm.areaCode) {
+            if (!value || !this.registerForm.areaCode) {
                 return callback(new Error('Please input your phone number'));
             } else if (!isPhone(value)) {
                 return callback(new Error('Please input a valid phone number'));
@@ -90,13 +94,15 @@ export default {
         return {
             areacodes: [],
             activeWay: 'phone',  // 'phone' or 'email'
-            passwordLessLoginForm: {
+            passwordType: 'password',
+            registerForm: {
                 phone: '',
                 email: '',
                 captcha: '',
+                password: '',
                 areaCode: '',
             },
-            captchasScene: 'login',
+            captchasScene: 'register',
             resendInterval: 60,
             phoneTimeOutCount: 0,
             phoneTimeOutInterval: null,
@@ -114,6 +120,10 @@ export default {
                     { required: true, message: 'Please input verification code', trigger: 'blur' },
                     { validator: validateCaptcha, trigger: 'blur' },
                 ],
+                password: [
+                    { required: true, message: 'Please input password', trigger: 'blur' },
+                    { min: 6, max: 30, message: 'The password length should not be less than 6 digits!', trigger: 'blur' }
+                ],
             },
             loading: false,
         };
@@ -124,55 +134,59 @@ export default {
     },
     methods: {
 
-        goto: function(route) {
-            this.$router.push(route);
-        },
-
         submit: function() {
             let post = {
                 language: this.$i18n.locale,
-            };
-            if (this.activeWay === 'phone') {
-				this.$refs['passwordLessLoginForm'].validateField('phone');
-				this.$refs['passwordLessLoginForm'].validateField('captcha');
-				if (this.$refs['phone'].validateState === 'error' ||
-					this.$refs['captcha'].validateState === 'error'
-				) {
-                    return;
-                }
-			} else if (this.activeWay === 'email') {
-				this.$refs['passwordLessLoginForm'].validateField('email');
-				this.$refs['passwordLessLoginForm'].validateField('captcha');
-				if (this.$refs['email'].validateState === 'error' ||
-					this.$refs['captcha'].validateState === 'error'
-				) {
-                    return;
-                }
-			}            
-			this.loading = true;
-			post['captcha'] = this.passwordLessLoginForm.captcha;
+			};
 			if (this.activeWay === 'phone') {
-				post['country_code'] = this.passwordLessLoginForm.areaCode.split(':')[0];
-				post['telephone'] = this.passwordLessLoginForm.phone;
+				this.$refs['registerForm'].validateField('phone');
+				this.$refs['registerForm'].validateField('captcha');
+				this.$refs['registerForm'].validateField('password');
+				if (this.$refs['phone'].validateState === 'error' ||
+					this.$refs['captcha'].validateState === 'error' ||
+					this.$refs['password'].validateState === 'error'
+				) {
+                    return;
+                }
 			} else if (this.activeWay === 'email') {
-				post['email'] = this.passwordLessLoginForm.email;
+				this.$refs['registerForm'].validateField('email');
+				this.$refs['registerForm'].validateField('captcha');
+				this.$refs['registerForm'].validateField('password');
+				if (this.$refs['email'].validateState === 'error' ||
+					this.$refs['captcha'].validateState === 'error' ||
+					this.$refs['password'].validateState === 'error'
+				) {
+                    return;
+                }
 			}
-			this.$store.dispatch('PasswordLessLogin', post)
+            this.loading = true;
+            post['brand'] = 'Apowersoft';
+			post['captcha'] = this.registerForm.captcha;
+            post['password'] = this.registerForm.password;
+            post['language'] = this.$i18n.locale;
+            post['registed_app'] = 'ApowerRec';
+			if (this.activeWay === 'phone') {
+				post['country_code'] = this.registerForm.areaCode.split(':')[0];
+				post['telephone'] = this.registerForm.phone;
+			} else if (this.activeWay === 'email') {
+				post['email'] = this.registerForm.email;
+			}
+			this.$store.dispatch('Register', post)
 				.then(() => {
 					this.$router.push({ path: '/account-info', });
 					this.loading = false;
 				})
 				.catch((error) => {
 					let errorMsg;
-					if (error.status === -200) {
+					if (error.status === -208) {
 						if (this.activeWay === 'email') {
-							errorMsg = 'The email address doesn\'t have an associated user account. You can Register Now';
+							errorMsg = 'The email address is registerd, please login.';
 						} else {
-							errorMsg = 'The phone number doesn\'t have an associated user account. You can Register Now';
+							errorMsg = 'The phone number is registerd, please login.';
 						}
 					} else if (error.status === -206) {
-						errorMsg = 'Invalid verification code';
-					} 
+                        errorMsg = 'Invalid verification code';
+                    }
 					this.$message.error(errorMsg)
 					this.loading = false;
 				});
@@ -180,13 +194,13 @@ export default {
 
         sendCaptcha: function() {
             if (this.activeWay === 'phone') {
-                this.$refs['passwordLessLoginForm'].validateField('phone');
+                this.$refs['registerForm'].validateField('phone');
                 if (this.$refs['phone'].validateState === 'error') {
                     this.$message.error(this.$refs['phone'].validateMessage);
                     return;
                 }
             } else if (this.activeWay === 'email') {
-                this.$refs['passwordLessLoginForm'].validateField('email');
+                this.$refs['registerForm'].validateField('email');
                 if (this.$refs['email'].validateState === 'error') {
                     this.$message.error(this.$refs['email'].validateMessage);
                     return;
@@ -198,10 +212,10 @@ export default {
                 language: this.$i18n.locale,
             };
             if (this.activeWay === 'phone') {
-                post['telephone'] = this.passwordLessLoginForm.phone;
-                post['country_code'] = this.passwordLessLoginForm.areaCode.split(':')[0];
+                post['telephone'] = this.registerForm.phone;
+                post['country_code'] = this.registerForm.areaCode.split(':')[0];
             } else {
-                post['email'] = this.passwordLessLoginForm.email;
+                post['email'] = this.registerForm.email;
             }
 
             sendVcode(post)
@@ -234,7 +248,13 @@ export default {
                         errorMsg = 'You can\'t send verification code to an email address more than 3 times each day';
                     } else if (error.status === -211) {
                         errorMsg = 'You can\'t send verification code to a phone number more than 3 times each day';
-                    } 
+                    } else if (error.status === -208) {
+                        if (this.activeWay === 'email') {
+							errorMsg = 'The email address is registerd, please login.';
+						} else {
+							errorMsg = 'The phone number is registerd, please login.';
+						}
+                    }
                     this.$message.error(errorMsg)
                     this.loading = false;
                 });
@@ -258,11 +278,17 @@ export default {
 
         switchLoginWay: function(way) {
             this.activeWay = way;
-            this.$refs['passwordLessLoginForm'].resetFields();
+            this.$refs['registerForm'].resetFields();
         },
 
         switchPasswordType: function() {
             this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
+        },
+    },
+
+    computed: {
+        passwordAppendClass: function() {
+            return this.passwordType === 'password' ? 'eye-closed' : 'eye-open';
         },
     },
 };

@@ -6,8 +6,8 @@ import ResetPassword from '../views/pages/ResetPassword.vue';
 import PasswordLessLogin from '../views/pages/PasswordLessLogin.vue';
 import AccountInfo from '../views/pages/AccountInfo.vue';
 import Activate from '../views/pages/Activate.vue';
-import Vip from '../views/pages/Vip.vue';
 import Buy from '../views/pages/Buy.vue';
+import Register from '../views/pages/Register.vue';
 
 Vue.use(Router);
 
@@ -16,6 +16,15 @@ export default new Router({
         {
             path: '/',
             redirect: 'qrcode',
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: Register,
+            meta: {
+                bodyWidth: '900px',
+                bodyHeight: '612px',
+            },
         },
         {
             path: '/qrcode',
@@ -66,15 +75,6 @@ export default new Router({
             path: '/activate',
             name: 'activate',
             component: Activate,
-            meta: {
-                bodyWidth: '900px',
-                bodyHeight: '612px',
-            },
-        },
-        {
-            path: '/vip',
-            name: 'vip',
-            component: Vip,
             meta: {
                 bodyWidth: '900px',
                 bodyHeight: '612px',

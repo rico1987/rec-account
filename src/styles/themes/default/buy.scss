@@ -1,0 +1,125 @@
+@import "../../mixins/bem.scss";
+@import "variables.scss";
+
+@include b(buy) {
+    @include e(container) {
+        display: flex;
+        justify-content: center;
+        .type-switcher{
+            margin-top: 11px;
+            color: #999999;
+            position: relative;
+            span{
+                display: inline-block;
+                font-size: 24px;
+                padding: 0 22px 10px;
+                width: 48px;
+                cursor: pointer;
+                &.active {
+                    color: $primary;
+                }
+            }
+            .active-bottom{
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                height: 2px;
+                width: 92px;
+                background-color: $primary;
+                transition: all .5s ease-out;
+                &.left {
+                    left: 0;
+                }
+                &.right {
+                    left: 50%;
+                }
+            }
+        }
+    }
+
+    @include e(license-container) {
+        margin: 18px 13px 0;
+
+        .license-types{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            >div {
+                width: 200px;
+                height: 174px;
+                background-color: #333333;
+                box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.5);
+                cursor: pointer;
+                &.active {
+                    background-color: black;
+                    width: 194px;
+                    height: 168px;
+                    border: 3px solid $primary;
+                }
+
+                &.hot {
+                    position: relative;
+                    .title {
+                        &::after{
+                            content: '';
+                            content: '';
+                            width: 0;
+                            height: 0;
+                            width: 19px;
+                            height: 24px;
+                            left: 17px;
+                            top: 7px;
+                            position: absolute;
+                            transform: rotate(119deg);
+                        }
+                    }
+                }
+                &:hover {
+                    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 1);
+                }
+                .title{
+                    margin: 23px auto 29px;
+                    text-align: center;
+                    font-size: 22px;
+                    line-height: 22px;
+                    color: white;
+                }
+                .price {
+                    text-align: center;
+                    height: 36px;
+                    position: relative;
+                    left: 13%;
+                    >span{
+                        line-height: 36px;
+                        display: inline-block;
+                        height: 36px;
+                    }
+                    .currency {
+                        color: #F7BB5A;
+                        font-size: 16px;
+                    }
+                    .number {
+                        color: #F7BB5A;
+                        font-size: 36px;
+                    }
+                    .original {
+                        color: #999999;
+                        text-decoration: line-through;
+                        font-size: 16px;
+                    }
+                }
+                .limit {
+                    text-align: center;
+                    font-size: 18px;
+                    line-height: 18px;
+                    margin-top: 33px;
+                    span{
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+
+}

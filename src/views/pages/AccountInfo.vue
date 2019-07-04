@@ -1,7 +1,7 @@
 <template>
     <div class="account-account-info">
         <div class="account-account-info__container" v-loading.lock="loading">
-            <div class="account-account-info__avatar" v-if="userInfo">
+            <div class="account-account-info__avatar" v-if="userInfo" :class="{'is-default': !userInfo.avatar && !userInfo.avatar_url}">
                 <img v-if="userInfo.avatar || userInfo.avatar_url" :src="userInfo.avatar || userInfo.avatar_url" />
                 <span v-if="!userInfo.avatar && !userInfo.avatar_url" class="default-avatar"></span>
             </div>
@@ -13,16 +13,16 @@
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>
-                                <div @click="openMyAccount()">My Account</div>
+                                <div @click="openMyAccount()" class="menu-account">My Account</div>
                             </el-dropdown-item>
                             <el-dropdown-item>
-                                <div @click="openChangePassword()">Change Password</div>
+                                <div @click="openChangePassword()" class="menu-change-password">Change Password</div>
                             </el-dropdown-item>
                             <!-- <el-dropdown-item v-if="!isActivated">
                                 <div @click="openActivate()">Activate</div>
                             </el-dropdown-item> -->
                             <el-dropdown-item>
-                                <div @click="logout()">Log out</div>
+                                <div @click="logout()" class="menu-logout">Log out</div>
                             </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -73,15 +73,15 @@
                 </div>
             </div>
         </div>
-        <div class="account-account-info__recommend" @click="gotoRecommended()" v-if="recommended">
-            <div class="icon">
+        <div class="account-account-info__recommend" @click="gotoRecommended()">
+            <div class="icon" v-if="recommended">
                 <img v-if="recommended.product_icon" :src="recommended.product_icon" />
             </div>
-            <div class="info">
+            <div class="info" v-if="recommended">
                 <header>{{recommended.product_name}}</header>
                 <p>{{recommended.introduction}}</p>
             </div>
-            <div class="link">
+            <div class="link" v-if="recommended">
                 <span @click="gotoRecommended()">Learn more</span>
             </div>
         </div>

@@ -1,5 +1,5 @@
+const queryString = require('query-string');
 import * as is from './is';
-import { InvokeDebug } from './invoke';
 
 export function trim(str) {
     return str.replace(/^\s*/, '').replace(/\s*$/, '');
@@ -420,4 +420,38 @@ export function getAccountPreByIdentityToken(identity_token) {
         accountPre = '';
     }
     return accountPre;
+}
+
+export function useQuery(url, params) {
+
+    const preParams = parseQuery(url);
+    const afterParams = Object.assign(preParams, params);
+    const index = url.indexOf('?');
+    let result, hasQuery = false;
+
+    if (index > -1) {
+        result = url.substring(index);
+    } else {
+        result = url;
+    }
+
+    for (let i in afterParams) {
+		const param = encodeURIComponent(params[i]);
+		
+        result += (hasQuery ? '&' : '?') + i + '=' + param;
+        hasQuery = true;
+    }
+    
+	return result;
+}
+
+export function parseQuery(url) {
+    const index = url.indexOf('?');
+    let params = {};
+    if (index > -1) {
+        let search = url.substring(index);
+        params = queryString.parse(search);
+    }
+
+    return params;
 }

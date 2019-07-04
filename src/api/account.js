@@ -46,31 +46,12 @@ export function loginByToken(data) {
 export function passwordLessLogin(data) {
     return accountFetch.post('/sessions', qs.stringify(Object.assign(data, {
         brand: 'Apowersoft',
-        registed_app: 'myaccountm.apowersoft.com',
+        registed_app: 'ApowerRec',
     })));
 }
 
-export function registerByEmail(data) {
-    return accountFetch.post('/users', qs.stringify({
-        brand: 'Apowersoft',
-        captcha: data.captcha,
-        email: data.email,
-        language: data.language,
-        password: data.password,
-        registed_app: 'myaccountm.apowersoft.com',
-    }));
-}
-
-export function registerByPhone(data) {
-    return accountFetch.post('/users', qs.stringify({
-        brand: 'Apowersoft',
-        captcha: data.captcha,
-        country_code: data.areaCode,
-        language: data.language,
-        password: data.password,
-        telephone: data.phone,
-        registed_app: 'myaccountm.apowersoft.com',
-    }));
+export function register(data) {
+    return accountFetch.post('/users', qs.stringify(data));
 }
 
 export function changeAvatar() {
