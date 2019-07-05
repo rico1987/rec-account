@@ -2,7 +2,6 @@
     <div class="account-reset-password">
         <Switcher class="account-reset-password__switcher"></Switcher>
         <div class="account-reset-password__container">
-            <h2>重置密码</h2>
             <div class="account-reset-password__way-switcher">
                 <span class="phone" @click="switchLoginWay('phone')" v-bind:class="{ active: activeWay === 'phone' }"></span>
                 <span class="email" @click="switchLoginWay('email')" v-bind:class="{ active: activeWay === 'email' }"></span>
@@ -47,7 +46,7 @@
                 </el-form-item>
             </el-form>
             <div class="account-reset-password__submit-btn">
-                <p @click="submit()">确认</p>
+                <p @click="submit()">重置密码</p>
             </div>
         </div>
     </div>

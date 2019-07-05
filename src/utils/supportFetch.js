@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import Store from './storage';
+import { isFormData } from './is';
 
 const service = axios.create({
     baseURL: config.supportApiBaseUrl,
@@ -11,27 +12,41 @@ const service = axios.create({
 service.interceptors.request.use((config) => {
     let identity_token = Store.get('identity_token');
     let appInfo = Store.get('appInfo');
-    const product_name = appInfo.name;
-    if (identity_token) {
-        if (config.data) {
-            if (config.data && config.data.length > 0) {
-                config.data += `&identity_token=${identity_token}`;
+    const product_name = appInfo && appInfo.name;
+    const guid = appInfo && appInfo.guid;
+    if (!isFormData(config.data)) {
+        if (identity_token) {
+            if (config.data) {
+                if (config.data && config.data.length > 0) {
+                    config.data += `&identity_token=${identity_token}`;
+                } else {
+                    config.data += `identity_token=${identity_token}`;
+                }
             } else {
-                config.data += `identity_token=${identity_token}`;
+                config.data = `identity_token=${identity_token}`;
             }
-        } else {
-            config.data = `identity_token=${identity_token}`;
         }
-    }
-    if (product_name) {
-        if (config.data) {
-            if (config.data && config.data.length > 0) {
-                config.data += `&product_name=${product_name}`;
+        if (product_name) {
+            if (config.data) {
+                if (config.data && config.data.length > 0) {
+                    config.data += `&product_name=${product_name}`;
+                } else {
+                    config.data += `product_name=${product_name}`;
+                }
             } else {
-                config.data += `product_name=${product_name}`;
+                config.data = `product_name=${product_name}`;
             }
-        } else {
-            config.data = `product_name=${product_name}`;
+        }
+        if (guid) {
+            if (config.data) {
+                if (config.data && config.data.length > 0) {
+                    config.data += `&guid=${guid}`;
+                } else {
+                    config.data += `guid=${guid}`;
+                }
+            } else {
+                config.data = `guid=${guid}`;
+            }
         }
     }
     return config;

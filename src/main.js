@@ -65,25 +65,56 @@ Vue.prototype.InvokeApp = InvokeApp;
 Vue.prototype.InvokeDebug = InvokeDebug;
 
 // 拉取软件信息
+let isLogined = false;
 
 InvokeApp('get-passport-info', {}, (res) => {
     store.dispatch('setAppInfo', res && res.data.app_info);
+
+    if (res && res.data && res.data.user_info && res.data.identity_token) {
+        isLogined = true;
+    }
 });
 
-InvokeDebug(window.localStorage);
-window.localStorage.setItem('test', {a: 1});
-InvokeDebug(window.localStorage.getItem('test'));
+
 
 let lang = getQueryValue('lang') || 'zh';
 
+// 获取html中定义的全局变量，决定跳转
+
 router.beforeEach((to, from, next) => {
+    const page = window.page;
     const bodyWidth = to.meta.bodyWidth;
     const bodyHeight = to.meta.bodyHeight;
     if (bodyWidth && bodyHeight) {
         document.body.style.width = bodyWidth;
         document.body.style.height = bodyHeight;
     }
-    next();
+    if (page) {
+        window.page = null;
+        if (page === 'buy') {
+            if (isLogined) {
+                next({
+                    path: '/buy',
+                });
+            } else {
+                next({
+                    path: '/qrcode',
+                });
+            }
+        } else {
+            if (isLogined) {
+                next({
+                    path: '/account-info',
+                });
+            } else {
+                next({
+                    path: '/qrcode',
+                });
+            }
+        }
+    } else {
+        next();
+    }
 });
 
 const i18n = new VueI18n({

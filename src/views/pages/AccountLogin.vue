@@ -11,12 +11,12 @@
                     <el-input placeholder="密码" type="password" minlength="6" maxlength="50" v-model="accountLoginForm.password"></el-input>
                 </el-form-item>
             </el-form>
+            <div class="account-account-login__submit-btn">
+                <p @click="submit()">登录</p>
+            </div>
             <div class="account-account-login__links">
                 <span @click="goto('/reset-password')">忘记密码</span>
                 <span @click="goto('/password-less-login')">免密码登录</span>
-            </div>
-            <div class="account-account-login__submit-btn">
-                <p @click="submit()">登录</p>
             </div>
         </div>
         <ThirdParty class="account-account-login__third-party"></ThirdParty>

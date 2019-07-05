@@ -59,6 +59,23 @@ export function submitTicket(postData) {
     return supportFetch.post('/account', qs.stringify(postData));
 }
 
-export function queryOrderStatus() {
+export function queryOrderStatus(transaction_id,) {
+    return supportFetch.post('/buy/apowersoft?action=query_order_status&nocache=1', qs.stringify({
+        transaction_id,
+        long_polling: 1,
+    }), {
+        timeout: 50000,
+    });
+}
 
+export function generateOrder(coupon_code, products, identity_token) {
+    let postData = new FormData();
+    postData.append('coupon_code', coupon_code);
+    postData.append('type', 'attachment');
+    postData.append('identity_token', identity_token);
+    for (let i = 0, l = products.length; i < l; i++) {
+        postData.append(`product[${i}][product_id]`, products[i]['product_id']);
+        postData.append(`product[${i}][quantity]`, products[i]['quantity']);
+    }
+    return supportFetch.post('/buy/apowersoft?action=generate_order&nocache=1', postData);
 }

@@ -99,6 +99,11 @@
                     line-height: 15px;
                     color: white;
                 }
+                .link{
+                    font-size: 14px;
+                    text-align: center;
+                    color: $primary;
+                }
                 .price {
                     text-align: center;
                     height: 19px;
@@ -133,6 +138,13 @@
                     }
                 }
             }
+
+            &.business {
+                justify-content: center;
+                >div {
+                    margin: 0 7px;
+                }
+            }
         }
 	}
 	
@@ -165,10 +177,57 @@
 		.qrcode-container{
 			flex: 0.854;
 			height: 171px;
-			background-color: #333333;
+            background-color: #333333;
+            position: relative;
 			.el-loading-mask{
 				background: transparent;
-			}
+            }
+            .qrcode{
+                display: inline-block;
+                width: 124px;
+                height: 124px;
+                border: 2px solid #6F6F6F;
+                margin-left: 35%;
+                margin-top: 22px;
+                position: relative;
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
+                .refresh{
+                    width: 100%;
+                    height: 100%;
+                    cursor: pointer;
+                    position: absolute;
+                    background-color: rgba(0, 0, 0, 0.85);
+                    top: 0;
+                    left: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    p{
+                        width: 100%;;
+                        color: white;
+                        display: inline-block;
+                        text-align: center;
+                    }
+                }
+            }
+            >p{
+                font-size: 14px;
+                display: inline-block;
+                position: absolute;
+                bottom: 24px;
+                left: 65%;
+                span.currency{
+                    color: #F7BB5A;
+                    font-size: 12px;
+                }
+                span.mount{
+                    color: #F7BB5A;
+                    font-size: 19px;
+                }
+            }
 		}
 	}
 

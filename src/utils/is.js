@@ -53,6 +53,7 @@ export function isBlob(val) {
     return nativeToString.call(val) === '[object Blob]';
 }
 
+
 export function isArrayBuffer(val) {
     return nativeToString.call(val) === '[object ArrayBuffer]';
 }

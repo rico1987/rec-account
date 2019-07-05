@@ -2,7 +2,6 @@
     <div class="account-register">
         <Switcher class="account-register__switcher"></Switcher>
         <div class="account-register__container">
-            <h2>注册</h2>
             <div class="account-register__way-switcher">
                 <span class="phone" @click="switchLoginWay('phone')" v-bind:class="{ active: activeWay === 'phone' }"></span>
                 <span class="email" @click="switchLoginWay('email')" v-bind:class="{ active: activeWay === 'email' }"></span>
@@ -47,9 +46,12 @@
                 </el-form-item>
             </el-form>
             <div class="account-register__submit-btn">
-                <p @click="submit()">确认</p>
+                <p @click="submit()">注册</p>
             </div>
-            <ThirdParty class="account-register__third-party" style="margin-top: 60px;"></ThirdParty>
+            <div class="account-password-less-login__links">
+                <span @click="goto('/qrcode')">二维码登陆</span>
+                <span @click="goto('/account-login')">账号密码登陆</span>
+            </div>
         </div>
     </div>
 </template>
@@ -134,6 +136,10 @@ export default {
     },
     methods: {
 
+        goto: function(route) {
+            this.$router.push(route);
+        },
+        
         submit: function() {
             let post = {
                 language: this.$i18n.locale,

@@ -4,7 +4,7 @@
 @include b(third-party) {
     width: 340px;
     margin-top: 15px;
-    margin: 80px auto 0;
+    margin: 17px auto 0;
     @include e(label) {
         text-align: center;
         position: relative;
@@ -37,6 +37,8 @@
     @include e(links) {
         width: 200px;
         margin: 5px auto;
+        display: flex;
+        justify-content: center;
         span{
             display: inline-block;
             width: 30px;

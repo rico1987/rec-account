@@ -99,7 +99,9 @@ body {
 }
 
 .el-message {
-    left: 450px;
+    left: 315px;
+    padding: 6px 10px;
+    min-width: 300px;
 }
 .el-dropdown-menu__item {
     &:hover{

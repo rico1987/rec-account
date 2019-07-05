@@ -2,7 +2,6 @@
     <div class="account-password-less-login">
         <Switcher class="account-password-less-login__switcher"></Switcher>
         <div class="account-password-less-login__container">
-            <h2>免密码登录</h2>
             <div class="account-password-less-login__way-switcher">
                 <span class="phone" @click="switchLoginWay('phone')" v-bind:class="{ active: activeWay === 'phone' }"></span>
                 <span class="email" @click="switchLoginWay('email')" v-bind:class="{ active: activeWay === 'email' }"></span>
@@ -41,12 +40,13 @@
                     </el-input>
                 </el-form-item>
             </el-form>
-            <div class="account-password-less-login__links">
-                <span></span>
-                <span @click="goto('/account-login')">账号密码登陆</span>
-            </div>
+           
             <div class="account-password-less-login__submit-btn">
-                <p @click="submit()">确认</p>
+                <p @click="submit()">登陆</p>
+            </div>
+            <div class="account-password-less-login__links">
+                <span @click="goto('/register')">注册</span>
+                <span @click="goto('/account-login')">账号密码登陆</span>
             </div>
         </div>
     </div>
