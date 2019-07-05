@@ -13,16 +13,16 @@
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>
-                                <div @click="openMyAccount()" class="menu-account">My Account</div>
+                                <div @click="openMyAccount()" class="menu-account">我的账户</div>
                             </el-dropdown-item>
                             <el-dropdown-item>
-                                <div @click="openChangePassword()" class="menu-change-password">Change Password</div>
+                                <div @click="openChangePassword()" class="menu-change-password">修改密码</div>
                             </el-dropdown-item>
                             <!-- <el-dropdown-item v-if="!isActivated">
                                 <div @click="openActivate()">Activate</div>
                             </el-dropdown-item> -->
                             <el-dropdown-item>
-                                <div @click="logout()" class="menu-logout">Log out</div>
+                                <div @click="logout()" class="menu-logout">退出</div>
                             </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -50,24 +50,24 @@
                         </tr>
                         <tr v-if="isNearlyExpired">
                             <td colspan="2">
-                                <span class="primary-btn" @click="onClickBuy()">Renew VIP</span>
+                                <span class="primary-btn" @click="onClickBuy()">续费</span>
                             </td>
                         </tr>
                         <tr v-if="!isActivated">
                             <td>&nbsp;</td>
                             <td v-if="language === 'zh'">
-                                <span class="primary-btn" @click="onClickBuy()">Upgrade to VIP</span>
+                                <span class="primary-btn" @click="onClickBuy()">开通VIP</span>
                             </td>
                             <td v-if="language !== 'zh'">
-                                <span class="primary-btn" @click="openActivate()">Activate</span>
+                                <span class="primary-btn" @click="openActivate()">激活</span>
                             </td>
                         </tr>
                     </table>
                 </div>
                 <div class="row links">
-                    <span v-if="urls.faq" @click="gotoFaq()">FAQ</span>
+                    <span v-if="urls.faq" @click="gotoFaq()">常见问题</span>
                     <span v-if="urls.faq">|</span>
-                    <span v-if="urls.forum" @click="gotoCommunity()">Community</span>
+                    <span v-if="urls.forum" @click="gotoCommunity()">社区</span>
                     <span v-if="urls.forum">|</span>
                     <span @click="gotoFindVip()">找回VIP</span>
                 </div>
@@ -82,7 +82,7 @@
                 <p>{{recommended.introduction}}</p>
             </div>
             <div class="link" v-if="recommended">
-                <span @click="gotoRecommended()">Learn more</span>
+                <span @click="gotoRecommended()">了解详情</span>
             </div>
         </div>
     </div>
@@ -110,18 +110,18 @@ export default {
             loading: false,
             recommended: null,
             PRODUCT_LICENSE_TYPE_TEXT: {
-                vol        : 'Personal',
-                personal   : 'Personal',
-                commercial : 'Commercial',
+                vol        : '个人授权版',
+                personal   : '个人授权版',
+                commercial : '商业授权版',
             },
 
             PASSPORT_LICENSE_TYPE_text: {
-                trial     : 'Trial',
-                daily     : 'Daily',
-                monthly   : 'Monthly' ,
-                quarterly : 'Quarterly',
-                yearly    : 'Yearly',
-                lifetime  : 'Lifetime',
+                trial     : '试用版',
+                daily     : '日度',
+                monthly   : '月度' ,
+                quarterly : '季度',
+                yearly    : '年度',
+                lifetime  : '终身',
             },
 
             WILL_EXPIRED_DAYS: {
@@ -158,7 +158,7 @@ export default {
                     this.loading = false;
                 })
                 .catch((error) => {
-                    this.$message.error(error.msg || 'Faild to get lincense info!');
+                    this.$message.error(error.msg || '获取授权信息失败!');
                     this.loading = false;
                 });
         },
@@ -272,10 +272,10 @@ export default {
             }
             if (this.isNearlyExpired) {
                 const remainingDays = this.licenseInfo.remain_days || 0;
-                return `${remainingDays} days later`;
+                return `${remainingDays} 天后`;
             }
             if (this.licenseInfo.passport_license_type === 'lifetime') {
-                return 'Lifetime';
+                return '终身';
             }
             return this.licenseInfo.expire_date.replace(/T/, ' ').replace(/\.000/, '').replace(/-/g, '/').split(' ')[0];
         },

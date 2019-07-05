@@ -261,6 +261,7 @@ export default {
                     },
                 });
                 this.$store.dispatch('setLicenseInfo', data.data.license_info);
+                this.$router.push({ path: '/account-info', });
             }
         },
         

@@ -66,23 +66,23 @@ export default {
 
         var validatePhone = (rule, value, callback) => {
             if (!value || !this.resetPasswordForm.areaCode) {
-                return callback(new Error('Please input your phone number'));
+                return callback(new Error('请输入手机号码'));
             } else if (!isPhone(value)) {
-                return callback(new Error('Please input a valid phone number'));
+                return callback(new Error('请输入有效手机号码'));
             } else {
                 return callback();
             }
 		};
 		var validateEmail = (rule, value, callback) => {
             if (!isEmail(value)) {
-                return callback(new Error('Please input a valid email address'));
+                return callback(new Error('请输入有效邮箱'));
             } else {
                 return callback();
             }
 		};
         var validateCaptcha = (rule, value, callback) => {
             if (!value || value.length !== 4) {
-                return callback(new Error('Invalid verification code'));
+                return callback(new Error('无效验证码'));
             } else {
                 return callback();
             }
@@ -109,16 +109,16 @@ export default {
                     { validator: validatePhone, trigger: 'blur' },
                 ],
                 email: [
-					{ required: true, message: 'Please input your email address', trigger: 'blur' },
+					{ required: true, message: '请输入邮箱', trigger: 'blur' },
                     { validator: validateEmail, trigger: 'blur' },
                 ],
                 captcha: [
-                    { required: true, message: 'Please input verification code', trigger: 'blur' },
+                    { required: true, message: '请输入验证码', trigger: 'blur' },
                     { validator: validateCaptcha, trigger: 'blur' },
                 ],
                 password: [
-                    { required: true, message: 'Please input password', trigger: 'blur' },
-                    { min: 6, max: 30, message: 'The password length should not be less than 6 digits!', trigger: 'blur' }
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 6, max: 30, message: '密码长度至少为6位！', trigger: 'blur' }
                 ],
             },
             loading: false,
@@ -173,12 +173,12 @@ export default {
 					let errorMsg;
 					if (error.status === -200) {
 						if (this.activeWay === 'email') {
-							errorMsg = 'The email address doesn\'t have an associated user account. You can Register Now';
+							errorMsg = '该邮箱无法找到您的账号，请立即注册';
 						} else {
-							errorMsg = 'The phone number doesn\'t have an associated user account. You can Register Now';
+							errorMsg = '该手机号无法找到您的账号，请立即注册';
 						}
 					} else if (error.status === -206) {
-						errorMsg = 'Invalid verification code';
+						errorMsg = '无效验证码';
 					} 
 					this.$message.error(errorMsg)
 					this.loading = false;
@@ -238,9 +238,9 @@ export default {
                 .catch((error) => {
                     let errorMsg;
                     if (error.status === -210) {
-                        errorMsg = 'You can\'t send verification code to an email address more than 3 times each day';
+                        errorMsg = '同一邮箱每天只能发送三次验证码';
                     } else if (error.status === -211) {
-                        errorMsg = 'You can\'t send verification code to a phone number more than 3 times each day';
+                        errorMsg = '同一手机号码每天只能发送三次验证码';
                     } 
                     this.$message.error(errorMsg)
                     this.loading = false;

@@ -37,8 +37,8 @@ export default {
     data() {
         return {
             accountLoginForm: {
-                account: '272355332@qq.com',
-                password: '111111',
+                account: '',
+                password: '',
             },
             rules: {
                 account: [
@@ -77,12 +77,12 @@ export default {
                         let errorMsg;
                         if (error.status === -200) {
                             if (isEmail(this.accountLoginForm.account)) {
-                                errorMsg = 'The email address doesn\'t have an associated user account. You can Register Now';
+                                errorMsg = '该邮箱无法找到您的账号，请立即注册';
                             } else {
-                                errorMsg = 'The phone number doesn\'t have an associated user account. You can Register Now';
+                                errorMsg = '该手机号无法找到您的账号，请立即注册';
                             }
                         } else if (error.status === -207) {
-                            errorMsg = 'Incorrect account or password';
+                            errorMsg = '账号或密码错误！';
                         } 
                         this.$message.error(errorMsg)
                         this.loading = false;
