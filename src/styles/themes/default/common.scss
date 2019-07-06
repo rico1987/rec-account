@@ -131,3 +131,10 @@ body {
         background-image: url('../../../assets/img/out-active.svg');
     }
 }
+.el-loading-spinner {
+    .circular {
+        .path{
+            stroke: $primary;
+        }
+    }
+}
