@@ -33,11 +33,13 @@ const app = {
                 getLicenseInfo(language).then((response) => {
                     const data = response.data;
                     if (data && data.status === 1) {
+						InvokeDebug(data);
                         InvokeApp('update-passport-info', {
                             'data': {
-                                'license_info': data.data && data.data.license_info ? data.data.license_info : {},
+								user_info: data.data && data.data.user_info ? data.data.user_info : {},
+								license_info: data.data && data.data.license_info ? data.data.license_info : {},
                             },
-                        })
+                        });
                         commit('SET_LICENSE_INFO', data.data && data.data.license_info);
                         Store.set('licenseInfo', data.data && data.data.license_info);
                         resolve(data.data && data.data.license_info);

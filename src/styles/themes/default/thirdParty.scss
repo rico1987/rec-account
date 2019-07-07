@@ -44,7 +44,8 @@
             width: 30px;
             height: 30px;
             margin: 0 10px;
-            background-size: 100%;
+			background-size: contain;
+			background-repeat: no-repeat;
             cursor: pointer;
             $logins:
                 ('google'  ),
@@ -57,10 +58,7 @@
 
             @each $login in $logins{
                 &.#{$login}{
-                    background: url(../../../assets/img/#{$login}.svg); // url(../img/logins/#{$login}.svg);
-                    background-size: 100%;
-                    cursor: pointer;
-
+                    background-image: url(../../../assets/img/#{$login}.svg);
                     &:hover{
                         background-image: url(../../../assets/img/#{$login}-hover.svg)
                     }

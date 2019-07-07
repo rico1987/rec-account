@@ -43,6 +43,11 @@ import LangTr from './lang/tr.json';
 import LangTw from './lang/tw.json';
 
 Vue.config.productionTip = false;
+
+Vue.config.keyCodes = {
+	enter: 13,
+};
+
 Vue.use(VueI18n);
 
 // element components
@@ -68,13 +73,26 @@ Vue.prototype.InvokeDebug = InvokeDebug;
 let isLogined = false;
 
 InvokeApp('get-passport-info', {}, (res) => {
-    store.dispatch('setAppInfo', res && res.data.app_info);
-
-    if (res && res.data && res.data.user_info && res.data.identity_token) {
-        isLogined = true;
+	store.dispatch('setAppInfo', res && res.data.app_info);
+    if (res && res.data && res.data.user_info && res.data.user_info.identity_token) {
+		store.dispatch('UpdateIdentityToken', res.data.user_info.identity_token);
+		isLogined = true;
+		InvokeDebug('Login status: logined');
     }
 });
 
+// 获取传过来page参数
+let page, search = window.location.search;
+
+if (search) {
+	const params = search.substr(1).split('&').map((ele) => {
+		return {
+			key: ele.split('=')[0],
+			value: ele.split('=')[1],
+		};
+	});
+	page = params.find((ele) => ele.key === 'page')['value'];
+}
 
 
 let lang = getQueryValue('lang') || 'zh';
@@ -82,7 +100,6 @@ let lang = getQueryValue('lang') || 'zh';
 // 获取html中定义的全局变量，决定跳转
 
 router.beforeEach((to, from, next) => {
-    const page = window.page;
     const bodyWidth = to.meta.bodyWidth;
     const bodyHeight = to.meta.bodyHeight;
     if (bodyWidth && bodyHeight) {
@@ -90,8 +107,8 @@ router.beforeEach((to, from, next) => {
         document.body.style.height = bodyHeight;
     }
     if (page) {
-        window.page = null;
         if (page === 'buy') {
+			page = null;
             if (isLogined) {
                 next({
                     path: '/buy',
@@ -102,6 +119,7 @@ router.beforeEach((to, from, next) => {
                 });
             }
         } else {
+			page = null;
             if (isLogined) {
                 next({
                     path: '/account-info',

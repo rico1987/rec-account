@@ -7,7 +7,7 @@
                 <el-form-item prop="account">
                     <el-input placeholder="手机号/邮箱" minlength="6" maxlength="50" v-model="accountLoginForm.account"></el-input>
                 </el-form-item>
-                 <el-form-item prop="password">
+                 <el-form-item prop="password" >
                     <el-input placeholder="密码" type="password" minlength="6" maxlength="50" v-model="accountLoginForm.password"></el-input>
                 </el-form-item>
             </el-form>
@@ -91,7 +91,7 @@ export default {
                     return false;
                 }
             });
-        },
+		},
     },
 };
 </script>

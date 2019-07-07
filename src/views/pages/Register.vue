@@ -58,7 +58,6 @@
 
 <script>
 import Switcher from '@/components/Switcher.vue';
-import ThirdParty from '@/components/ThirdParty.vue';
 import { getAreaCodes, sendVcode } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
 
@@ -66,7 +65,6 @@ export default {
     name: 'register',
     components: {
         Switcher,
-        ThirdParty,
     },
     data() {
 

@@ -69,6 +69,7 @@
 <script>
 import axios from 'axios';
 import { generateOrder, queryOrderStatus, getLicenseInfo } from '@/api/support';
+import { openUrl } from '@/utils/invoke';
 import Store from '@/utils/storage';
 const queryUrl = 'https://www.apowersoft.cn/wp/wp-admin/admin-ajax.php?action=ajax_get_info_by_pro_name&pro_name=ApowerRec';
 
@@ -154,7 +155,8 @@ export default {
         },
 
         gotoBuy: function() {
-
+			const identity_token = Store.get('identity_token');
+            openUrl(`https://www.apowersoft.cn/store/apowerrec.html?identity_token=${identity_token}`);
         },
 
         getProductsInfo: function() {
@@ -168,6 +170,7 @@ export default {
                     }
                 })
                 .catch((error) => {
+					this.InvokeDebug('ErrorMessge: 获取产品信息失败');
                     this.InvokeDebug(error);
                 })
         },
@@ -182,7 +185,7 @@ export default {
             products.push({
                 product_id: this.activeProductId,
                 quantity: 1,
-            })
+            });
             generateOrder('', products, identity_token)
                 .then((res) => {
                     if (res.data.status === 1) {
@@ -212,6 +215,7 @@ export default {
                     this.loading = false;
                 })
                 .catch((error) => {
+					this.InvokeDebug('ErrorMessge: 生成订单失败');
                     this.InvokeDebug(error);
                 });
         },
@@ -257,7 +261,8 @@ export default {
             if (data.data && data.data.license_info) {
                 this.InvokeApp('update-passport-info', {
                     'data': {
-                        'license_info': data.data.license_info,
+						license_info: data.data.license_info,
+						user_info: {},
                     },
                 });
                 this.$store.dispatch('setLicenseInfo', data.data.license_info);

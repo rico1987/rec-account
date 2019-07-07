@@ -62,7 +62,6 @@ export function submitTicket(postData) {
 export function queryOrderStatus(transaction_id,) {
     return supportFetch.post('/buy/apowersoft?action=query_order_status&nocache=1', qs.stringify({
         transaction_id,
-        long_polling: 1,
     }), {
         timeout: 50000,
     });

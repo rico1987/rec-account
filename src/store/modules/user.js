@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { login, register, resetPassword, passwordLessLogin, loginByToken, } from '@/api/account';
 import { getUnlimitedVipInfo, } from '@/api/support';
 import Store from '@/utils/storage';
-import { InvokeApp } from '@/utils/invoke';
+import { InvokeApp, InvokeDebug } from '@/utils/invoke';
 
 const user = {
     state: {
@@ -28,6 +28,14 @@ const user = {
     },
 
     actions: {
+		UpdateIdentityToken({ commit, }, identity_token) {
+            return new Promise((resolve) => {
+                commit('SET_IDENTITY_TOKEN', identity_token);
+                Store.set('identity_token', identity_token);
+                resolve();
+            });
+		},
+		
         UpdateUserInfo({ commit, }, userInfo) {
             return new Promise((resolve) => {
                 commit('SET_USER_INFO', userInfo);
@@ -48,10 +56,12 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-                        Store.set('userInfo', data.data.user);
+						Store.set('userInfo', data.data.user);
+						InvokeDebug('updating passport info 1');
                         InvokeApp('update-passport-info', {
                             'data': {
-                                user_info: data.data.user,
+								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
+								license_info: {},
                             },
                         });
                         resolve();
@@ -75,9 +85,11 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
 						Store.set('userInfo', data.data.user);
+						InvokeDebug('updating passport info 2');
 						InvokeApp('update-passport-info', {
                             'data': {
-                                user_info: data.data.user,
+								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
+								license_info: {},
                             },
                         });
                         resolve();
@@ -100,10 +112,12 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-                        Store.set('userInfo', data.data.user);
+						Store.set('userInfo', data.data.user);
+						InvokeDebug('updating passport info 3');
                         InvokeApp('update-passport-info', {
                             'data': {
-                                user_info: data.data.user,
+								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
+								license_info: {},
                             },
                         });
                         resolve();
@@ -127,7 +141,14 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-                        Store.set('userInfo', data.data.user);
+						Store.set('userInfo', data.data.user);
+						InvokeDebug('updating passport info 4');
+                        InvokeApp('update-passport-info', {
+                            'data': {
+								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
+								license_info: {},
+                            },
+                        });
                         resolve();
                     } else {
                         reject(data.status);
@@ -193,7 +214,14 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-                        Store.set('userInfo', data.data.user);
+						Store.set('userInfo', data.data.user);
+						InvokeDebug('updating passport info 5');
+                        InvokeApp('update-passport-info', {
+                            'data': {
+								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
+								license_info: {},
+                            },
+                        });
                         resolve();
                     } else {
                         reject(data.status);
@@ -212,7 +240,14 @@ const user = {
                     commit('SET_USER_INFO', data.data.user);
                     Store.set('api_token', data.data.api_token);
                     Store.set('identity_token', data.data.identity_token);
-                    Store.set('userInfo', data.data.user);
+					Store.set('userInfo', data.data.user);
+					InvokeDebug('updating passport info 6');
+					InvokeApp('update-passport-info', {
+						'data': {
+							user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
+							license_info: {},
+						},
+					});
                     resolve();
                 } else {
                     reject();

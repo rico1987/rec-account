@@ -1,7 +1,7 @@
 <template>
     <div class="account-account-info">
         <div class="account-account-info__container" v-loading.lock="loading">
-            <div class="account-account-info__avatar" v-if="userInfo" :class="{'is-default': !userInfo.avatar && !userInfo.avatar_url}">
+            <div @click="openMyAccount()" class="account-account-info__avatar" v-if="userInfo" :class="{'is-default': !userInfo.avatar && !userInfo.avatar_url}">
                 <img v-if="userInfo.avatar || userInfo.avatar_url" :src="userInfo.avatar || userInfo.avatar_url" />
                 <span v-if="!userInfo.avatar && !userInfo.avatar_url" class="default-avatar"></span>
             </div>
@@ -39,10 +39,10 @@
                             <td class="title">许可类型：</td>
                             <td>
                                 {{passportLicenseType}}
-                                <span class="refresh-btn" v-if="!isActivated"></span>
+                                <span @click="refresh()" class="refresh-btn" :class="{'is-refreshing': isRefreshing}" v-if="!isActivated || isExpired"></span>
                             </td>
                         </tr>
-                        <tr v-if="isActivated || isExpired">
+                        <tr v-if="(isActivated || isExpired) && !isTrial">
                             <td class="title">有效期至：</td>
                             <td>
                                 {{expiredText}}
@@ -53,7 +53,7 @@
                                 <span class="primary-btn" @click="onClickBuy()">续费</span>
                             </td>
                         </tr>
-                        <tr v-if="!isActivated">
+                        <tr v-if="!isActivated || isExpired">
                             <td>&nbsp;</td>
                             <td v-if="language === 'zh'">
                                 <span class="primary-btn" @click="onClickBuy()">开通VIP</span>
@@ -91,7 +91,7 @@
 <script>
 import Store from '@/utils/storage';
 import { getAccountPreByIdentityToken } from '@/utils';
-import { openUrl, InvokeApp } from '@/utils/invoke';
+import { openUrl } from '@/utils/invoke';
 import { getMyAccountDomain, getApowersoftDomain } from '@/utils/apower';
 import { getRecommendProducts } from '@/api/support';
 
@@ -107,7 +107,8 @@ export default {
             userInfo: null,
             licenseInfo: null,
             urls: null,
-            loading: false,
+			loading: false,
+			isRefreshing: false,
             recommended: null,
             PRODUCT_LICENSE_TYPE_TEXT: {
                 vol        : '个人授权版',
@@ -164,7 +165,7 @@ export default {
         },
 
         getUrls: function() {
-            InvokeApp('get-passport-info', (data) => {
+            this.InvokeApp('get-passport-info', (data) => {
                 this.urls = data.data.url_info;
             });
         },
@@ -172,7 +173,6 @@ export default {
         getRecommendProduct: function() {
             getRecommendProducts(this.$i18n.locale)
                 .then((res) => {
-                    this.InvokeDebug(res.data.data);
                     if (res.data && res.data.data && res.data.data.recommend_product && res.data.data.recommend_product.length > 0) {
                         this.recommended = res.data.data.recommend_product[0];
                     }
@@ -201,11 +201,7 @@ export default {
         },
 
         onClickBuy: function() {
-            const identity_token = Store.get('identity_token');
-            let url;
-            let isActivatedNowOrBefore = this.isActivated || this.isExpired;
-            url = isActivatedNowOrBefore ? this.urls.renew : this.urls.order;
-            openUrl(`${url}?identity_token=${identity_token}`);
+            this.$router.push({ path: '/buy', });
         },
 
         gotoFaq: function() {
@@ -226,7 +222,20 @@ export default {
         gotoRecommended: function() {
             const identity_token = Store.get('identity_token');
             openUrl(`${this.recommended.product_url}?identity_token=${identity_token}`);
-        },
+		},
+		
+		refresh: function() {
+			this.isRefreshing = true;
+			this.$store.dispatch('getLicenseInfo', this.$i18n.locale)
+                .then((data) => {
+                    this.licenseInfo = data;
+                    this.isRefreshing = false;
+                })
+                .catch((error) => {
+                    this.$message.error(error.msg || '获取授权信息失败!');
+                    this.isRefreshing = false;
+                });
+		},
 
     },
 
@@ -248,7 +257,15 @@ export default {
 
         isExpired: function() {
             return this.licenseInfo && parseInt(this.licenseInfo.is_activated) == -2;
-        },
+		},
+		
+		isTrial: function() {
+			return this.licenseInfo && this.licenseInfo.passport_license_type === 'trial';
+		},
+
+		hasTrial: function() {
+			return this.licenseInfo && this.licenseInfo.no_trial !== '1';
+		},
 
         isNearlyExpired: function() {
             if (!this.isVip) {
@@ -268,7 +285,7 @@ export default {
 
         expiredText: function() {
             if (this.isExpired) {
-                return 'Expired';
+                return '已过期';
             }
             if (this.isNearlyExpired) {
                 const remainingDays = this.licenseInfo.remain_days || 0;

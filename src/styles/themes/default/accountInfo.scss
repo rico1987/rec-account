@@ -2,6 +2,7 @@
 @import "variables.scss";
 
 @include b(account-info) {
+	margin-top: -16px;
     width: 100%;
     height: 100%;
     @include e(container){
@@ -71,12 +72,27 @@
 							background: $primary-light-3;
 						}
 					}
+					span.refresh-btn{
+						display: inline-block;
+						width: 20px;
+						height: 20px;
+						background: url('../../../assets/img/refresh.svg') center no-repeat;
+						background-size: contain;
+						cursor: pointer;
+						animation: rotate 2s linear infinite;
+						animation-play-state: paused;
+						position: relative;
+						top: 5px;
+						&.is-refreshing {
+							animation-play-state: running;
+						}
+					}
 				}
                 td.title{
                     text-align: right;
                 }
                 &.links{
-                    margin-top: 85px;
+                    margin-top: 23px;
                     display: flex;
                     justify-content: flex-end;
                     span{
@@ -93,9 +109,9 @@
         }
         @include e(recommend) {
             position: absolute;
-            height: 174px;
+            height: 83px;
             width: calc(100% - 90px);
-            padding: 40px 45px 0;
+            padding: 20px 45px 0;
             left: 0;
             bottom: 0;
             background-color: $primary;

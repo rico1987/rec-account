@@ -101,6 +101,16 @@ $color-text-regular: #606266 !default;
 $color-text-secondary: #909399 !default;
 $color-text-placeholder: #c0c4cc !default;
 
+// animations
+@keyframes rotate{
+	0%  {
+		transform: rotate(0);
+	}
+	100%  {
+		transform: rotate(360deg);
+	}
+}
+
 // 全局开关
 
 $enable-caret:              true !default;
