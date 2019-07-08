@@ -91,63 +91,102 @@
                 td.title{
                     text-align: right;
                 }
-                &.links{
-                    margin-top: 23px;
-                    display: flex;
-                    justify-content: flex-end;
-                    span{
-                        cursor: pointer;
-                        display: inline-block;
-                        font-size: 16px;
-                        margin: 0 10px;
-                        &:hover{
-                            text-decoration: underline;
-                        }
-                    }
+            }
+        }
+
+        @include e(links) {
+            position: absolute;
+            width: calc(100% - 40px);
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 20px;
+            span{
+                cursor: pointer;
+                display: inline-block;
+                font-size: 16px;
+                margin: 0 10px;
+                &:hover{
+                    text-decoration: underline;
                 }
             }
         }
-        @include e(recommend) {
+
+        @include e(vip) {
+            width: 34px;
+            height: 34px;
+            margin: -4px 4px 0;
+            background: url('../../../assets/img/vip.svg') center top / contain no-repeat;
+            cursor: pointer;
+            float: left;
             position: absolute;
-            height: 83px;
-            width: calc(100% - 90px);
-            padding: 20px 45px 0;
-            left: 0;
-            bottom: 0;
-            background-color: $primary;
-            color: white;
-            .icon {
-                display: inline-block;
-                img{
-                    width: 50px;
-                    height: 50px;
-                    object-fit: contain;
-                }
+            left: 40px;
+            top: -23px;
+
+            &.active{
+                background-image: url('../../../assets/img/vip-active.svg');
             }
-            .info {
-                display: inline-block;
-                min-width: 0;
-                margin-left: 20px;
-                line-height: 25px;
-                p{
-                    font-size: 13px;
-                }
+        }
+        
+    }
+    @include e(links) {
+        position: absolute;
+        width: calc(100% - 40px);
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 20px;
+        bottom: 110px;
+        left: 0;
+        span{
+            cursor: pointer;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0 10px;
+            &:hover{
+                text-decoration: underline;
             }
-            .link {
-                display: inline-block;
-                float: right;
-                line-height: 34px;
-                font-size: 14px;
-                span{
-                    line-height: 50px;
-                    color: white;
-                    text-decoration: underline;
-                    cursor: pointer;
-                    display: block;
-                    text-align: center;
-                    &:hover{
-                        color: #eee;
-                    }
+        }
+    }
+
+    @include e(recommend) {
+        position: absolute;
+        height: 83px;
+        width: calc(100% - 90px);
+        padding: 20px 45px 0;
+        left: 0;
+        bottom: 0;
+        background-color: $primary;
+        color: white;
+        .icon {
+            display: inline-block;
+            img{
+                width: 50px;
+                height: 50px;
+                object-fit: contain;
+            }
+        }
+        .info {
+            display: inline-block;
+            min-width: 0;
+            margin-left: 20px;
+            line-height: 25px;
+            p{
+                font-size: 13px;
+            }
+        }
+        .link {
+            display: inline-block;
+            float: right;
+            line-height: 34px;
+            font-size: 14px;
+            span{
+                line-height: 50px;
+                color: white;
+                text-decoration: underline;
+                cursor: pointer;
+                display: block;
+                text-align: center;
+                &:hover{
+                    color: #eee;
                 }
             }
         }

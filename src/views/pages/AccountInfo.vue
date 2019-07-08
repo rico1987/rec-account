@@ -5,6 +5,9 @@
                 <img v-if="userInfo.avatar || userInfo.avatar_url" :src="userInfo.avatar || userInfo.avatar_url" />
                 <span v-if="!userInfo.avatar && !userInfo.avatar_url" class="default-avatar"></span>
             </div>
+            <div class="account-account-info__vip" :class="{'active': isVip}" @click="onClickCrown()">
+
+            </div>
             <div class="account-account-info__info">
                 <div class="row">
                     <el-dropdown>
@@ -39,7 +42,7 @@
                             <td class="title">许可类型：</td>
                             <td>
                                 {{passportLicenseType}}
-                                <span @click="refresh()" class="refresh-btn" :class="{'is-refreshing': isRefreshing}" v-if="!isActivated || isExpired"></span>
+                                <span @click="refresh()" class="refresh-btn" :class="{'is-refreshing': isRefreshing}" v-if="!isVip"></span>
                             </td>
                         </tr>
                         <tr v-if="(isActivated || isExpired) && !isTrial">
@@ -64,14 +67,14 @@
                         </tr>
                     </table>
                 </div>
-                <div class="row links">
-                    <span v-if="urls.faq" @click="gotoFaq()">常见问题</span>
-                    <span v-if="urls.faq">|</span>
-                    <span v-if="urls.forum" @click="gotoCommunity()">社区</span>
-                    <span v-if="urls.forum">|</span>
-                    <span @click="gotoFindVip()">找回VIP</span>
-                </div>
             </div>
+        </div>
+        <div class="account-account-info__links">
+            <span v-if="urls.faq" @click="gotoFaq()">常见问题</span>
+            <span v-if="urls.faq">|</span>
+            <span v-if="urls.forum" @click="gotoCommunity()">社区</span>
+            <span v-if="urls.forum">|</span>
+            <span @click="gotoFindVip()">找回VIP</span>
         </div>
         <div class="account-account-info__recommend" @click="gotoRecommended()">
             <div class="icon" v-if="recommended">
@@ -145,6 +148,15 @@ export default {
     },
 
     methods: {
+
+        onClickCrown: function() {
+            if (this.isVip) {
+                this.openMyAccount();
+            } else {
+                this.onClickBuy();
+            }
+        },
+
         getAccountInfo: function() {
             this.loading = true;
             this.userInfo = Store.get('userInfo');

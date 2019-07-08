@@ -57,7 +57,6 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
 						Store.set('userInfo', data.data.user);
-						InvokeDebug('updating passport info 1');
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
@@ -85,7 +84,6 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
 						Store.set('userInfo', data.data.user);
-						InvokeDebug('updating passport info 2');
 						InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
@@ -113,7 +111,6 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
 						Store.set('userInfo', data.data.user);
-						InvokeDebug('updating passport info 3');
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
@@ -142,7 +139,6 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
 						Store.set('userInfo', data.data.user);
-						InvokeDebug('updating passport info 4');
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
@@ -215,7 +211,6 @@ const user = {
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
 						Store.set('userInfo', data.data.user);
-						InvokeDebug('updating passport info 5');
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
@@ -241,7 +236,6 @@ const user = {
                     Store.set('api_token', data.data.api_token);
                     Store.set('identity_token', data.data.identity_token);
 					Store.set('userInfo', data.data.user);
-					InvokeDebug('updating passport info 6');
 					InvokeApp('update-passport-info', {
 						'data': {
 							user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),

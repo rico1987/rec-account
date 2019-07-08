@@ -119,6 +119,9 @@ export default {
             timeoutCount: null, 
             isTimeout: false,
             queryOrderStatusInterval: null,
+            queryPayStatusTimeout: null,
+            // 订单过期时间两小时，设置过期时间一个半小时
+
         };
     },
 
@@ -180,6 +183,10 @@ export default {
             this.qrcodeLoaded =false;
             this.transaction_id = null;
             this.isTimeout = false;
+            if (this.queryPayStatusTimeout) {
+                window.clearTimeout(this.queryPayStatusTimeout);
+                this.queryPayStatusTimeout = null;
+            }
             const identity_token = Store.get('identity_token');
             const products = [];
             products.push({
@@ -233,7 +240,7 @@ export default {
                     if (res.data && res.data.status === 1) {
                         let data = res.data.data;
                         if (!data || !data['order_detail']){
-                            window.setTimeout(() => {
+                            this.queryPayStatusTimeout = window.setTimeout(() => {
                                 this.queryOrderStatus();
                             }, 3000);
                         }
@@ -242,7 +249,7 @@ export default {
                         const orderStatus = orderInfo['transaction_status'];
 
                         if(orderStatus === 'unpaid'){
-                           window.setTimeout(() => {
+                           this.queryPayStatusTimeout = window.setTimeout(() => {
                                this.queryOrderStatus();
                            }, 0);
                         } else if(orderStatus === "complete"){
