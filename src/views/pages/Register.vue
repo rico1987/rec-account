@@ -276,7 +276,7 @@ export default {
                                 key: ele
                             })
                         });
-                        this.registerForm.areaCode = this.areacodes[0]['key'];
+                        this.registerForm.areaCode = this.areacodes[0]['code'];
                     }
                 });
         },

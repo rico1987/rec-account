@@ -204,10 +204,6 @@ export default {
                 }
             }
 
-
-
-            // ----
-
             const post = {
                 scene: this.captchasScene,
                 language: this.$i18n.locale,
@@ -216,7 +212,7 @@ export default {
                 post['telephone'] = this.resetPasswordForm.phone;
                 post['country_code'] = this.resetPasswordForm.areaCode.split(':')[0];
                 validatePost['telephone'] = this.resetPasswordForm.phone;
-                validatePost['country_code'] = this.resetPasswordForm.areaCode.split(':')[0];
+                validatePost['country_code'] = encodeURIComponent(this.resetPasswordForm.areaCode.split(':')[0]);
             } else {
                 post['email'] = this.resetPasswordForm.email;
                 validatePost['email'] = this.resetPasswordForm.email;
@@ -292,8 +288,7 @@ export default {
                                 key: ele
                             })
                         });
-                        this.resetPasswordForm.areaCode = this.areacodes[0]['key'];
-
+                        this.resetPasswordForm.areaCode = this.areacodes[0]['code'];
                     }
                 });
         },
