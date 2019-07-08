@@ -54,9 +54,9 @@
 				<p class="alipay" @click="switchPayMethod('alipay_qr')" :class="{'active': payMethod === 'alipay_qr'}">支付宝</p>
 			</div>
 			<div class="qrcode-container">
-                <div class="qrcode" v-loading.lock="loading || !qrcodeLoaded">
-                    <img v-if="qrcodeLoaded" :src="qrCodeUrl" />
-                    <div class="refresh" v-if="isTimeout" @click="refresh()">
+                <div class="qrcode" v-loading.lock="!qrCodeLoaded">
+                    <img v-if="qrCodeUrl" :src="qrCodeUrl" />
+                    <div class="refresh" v-if="isTimeout && qrCodeLoaded" @click="refresh()">
                         <p>点击刷新</p>
                     </div>
                 </div>
@@ -104,30 +104,30 @@ export default {
     },
     data() {
         return {
-            loading: false,
+            // loading: false,
             productInfo: null,
             prices: null,
 			currentType: 'personal',  // 'personal', 'business'
             payMethod: 'wxpay_qr', // 'wxpay_qr', 'alipay_qr'
             activeProductId: '18180124_L',
-            transaction_id: null,
-            prepayInfo: null,
-            invoice_amount: null,
             qrcodeLoaded: false,
             timeoutInterval: null,
-            timeout: 300, // 二维码过期时间
-            timeoutCount: null, 
-            isTimeout: false,
-            queryOrderStatusInterval: null,
             queryPayStatusTimeout: null,
-            // 订单过期时间两小时，设置过期时间一个半小时
-
+            transactionIdTimeout: 1.5 * 60 * 60, // 订单过期时间两小时，设置过期时间一个半小时
+            payInfos: {
+                '18180124_L': {},
+                '18180204_L': {},
+                '18180194_Q': {},
+                '18180123_Y': {},
+                '18180126_L': {},
+                '18180125_Y': {},
+            },
         };
     },
 
     created: function() {
 		this.getProductsInfo();
-		this.getTransactionId();
+        this.getTransactionId();
     },
     methods: {
 
@@ -179,60 +179,80 @@ export default {
         },
 
         getTransactionId: function() {
-            this.loading = true;
-            this.qrcodeLoaded =false;
-            this.transaction_id = null;
-            this.isTimeout = false;
-            if (this.queryPayStatusTimeout) {
-                window.clearTimeout(this.queryPayStatusTimeout);
-                this.queryPayStatusTimeout = null;
-            }
-            const identity_token = Store.get('identity_token');
-            const products = [];
-            products.push({
-                product_id: this.activeProductId,
-                quantity: 1,
-            });
-            generateOrder('', products, identity_token)
-                .then((res) => {
-                    if (res.data.status === 1) {
-                        this.prepayInfo = res.data.data;
-                        this.transaction_id = this.prepayInfo.transaction_id;
-                        this.invoice_amount = this.prepayInfo.invoice_amount;
-                        const imageSrc = `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${this.transaction_id}&payment_method=${this.payMethod}`;
-                        const image = new Image();
-                        image.src = imageSrc;
-                        image.onload = function() {
-                            this.qrcodeLoaded = true;
-                        }.bind(this);
-                        this.timeoutCount = this.timeout;
-                        this.timeoutInterval = window.setInterval(() => {
-                            if (this.timeoutCount === 0) {
-                                this.isTimeout = true;
-                                window.clearInterval(this.timeoutInterval);
-                                this.timeoutInterval = null;
-                                window.clearInterval(this.queryOrderStatusInterval);
-                                this.queryOrderStatusInterval = null;
-                            } else {
-                                this.timeoutCount--;
-                            }
-                        }, 1000);
-                        this.queryOrderStatus(this.transaction_id);
+            if (!this.timeoutInterval) {
+                this.timeoutInterval = window.setInterval(() => {
+                    const keys = Object.keys(this.payInfos);
+                    for (let i = 0,l = keys.length; i < l; i++) {
+                        if (this.payInfos[keys[i]]['timeoutCount'] && this.payInfos[keys[i]]['timeoutCount'] > 0) {
+                            this.payInfos[keys[i]]['timeoutCount']--;
+                        } else {
+                            this.payInfos[keys[i]]['isTimeout'] = true;
+                        }
                     }
-                    this.loading = false;
-                })
-                .catch((error) => {
-					this.InvokeDebug('ErrorMessge: 生成订单失败');
-                    this.InvokeDebug(error);
+                    this.InvokeDebug(this.payInfos);
+                }, 1000);
+            }
+            
+            if (!this.payInfos[this.activeProductId] || !this.payInfos[this.activeProductId]['transaction_id'] || this.payInfos[this.activeProductId]['isTimeout']) {
+                this.loading = true;
+                this.qrcodeLoaded = false;
+                const identity_token = Store.get('identity_token');
+                const products = [];
+                products.push({
+                    product_id: this.activeProductId,
+                    quantity: 1,
                 });
+                generateOrder('', products, identity_token)
+                    .then((res) => {
+                        this.loading = false;
+                        if (res.data.status === 1) {
+                            this.payInfos[this.activeProductId] = {
+                                'isTimeout': false,
+                                'timeoutCount': this.transactionIdTimeout,
+                                'transaction_id': res.data.data.transaction_id,
+                                'invoice_amount': res.data.data.invoice_amount,
+                                'wxpay_qr_loaded': false,
+                                'alipay_qr_loaded': false,
+                                'wxpay_qr': `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${res.data.data.transaction_id}&payment_method=wxpay_qr`,
+                                'alipay_qr': `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${res.data.data.transaction_id}&payment_method=alipay_qr`,
+                            };
+                            const wxpayImage = new Image();
+                            const alipayImage = new Image();
+                            wxpayImage.src = this.payInfos[this.activeProductId]['wxpay_qr'];
+                            wxpayImage.onload = function() {
+                                this.payInfos[this.activeProductId]['wxpay_qr_loaded'] = true;
+                                this.$forceUpdate();
+                            }.bind(this);
+                            alipayImage.src = this.payInfos[this.activeProductId]['alipay_qr'];
+                            alipayImage.onload = function() {
+                                this.payInfos[this.activeProductId]['alipay_qr_loaded'] = true;
+                                this.$forceUpdate();
+                            }.bind(this);
+                            window.clearTimeout(this.queryPayStatusTimeout);
+                            this.queryPayStatusTimeout = null;
+                            this.queryOrderStatus();
+                        }
+
+                    })
+                    .catch((error) => {
+                        this.InvokeDebug('ErrorMessge: 生成订单失败');
+                        this.InvokeDebug(error);
+                    });
+            } else {
+                window.clearTimeout(this.this.queryPayStatusTimeout);
+                this.queryPayStatusTimeout = null;
+                this.queryOrderStatus();
+                this.$forceUpdate();
+            }
         },
 
         refresh: function() {
             this.getTransactionId();
         },
 
-        queryOrderStatus: function(transaction_id) {
-            if (this.isTimeout) {
+        queryOrderStatus: function() {
+            const transaction_id = this.payInfos[this.activeProductId] && !this.payInfos[this.activeProductId]['isTimeout'] && this.payInfos[this.activeProductId]['transaction_id']    
+            if (!transaction_id) {
                 return;
             }
             queryOrderStatus(transaction_id)
@@ -275,13 +295,36 @@ export default {
                 this.$store.dispatch('setLicenseInfo', data.data.license_info);
                 this.$router.push({ path: '/account-info', });
             }
-        },
-        
+        },  
     },
 
     computed: {
         qrCodeUrl: function() {
-            return `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${this.transaction_id}&payment_method=${this.payMethod}`;
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId][this.payMethod];
+        },
+
+        qrCodeLoaded: function() {
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId][this.payMethod + '_loaded'];
+        },
+
+        isTimeout: function() {
+            if (this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['isTimeout']) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        invoice_amount: function() {
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'];
+        },
+
+        loading: function() {
+            if (this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId][this.payMethod + '_loaded']) {
+                return false;
+            } else {
+                return true;
+            }
         },
     },
 };

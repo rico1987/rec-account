@@ -34,20 +34,20 @@
                     <table>
                         <tr>
                             <td class="title">版本：</td>
-                            <td>
+                            <td class="value">
                                 {{productLicenseType}}
                             </td>
                         </tr>
                          <tr>
                             <td class="title">许可类型：</td>
-                            <td>
+                            <td class="value">
                                 {{passportLicenseType}}
                                 <span @click="refresh()" class="refresh-btn" :class="{'is-refreshing': isRefreshing}" v-if="!isVip"></span>
                             </td>
                         </tr>
                         <tr v-if="(isActivated || isExpired) && !isTrial">
                             <td class="title">有效期至：</td>
-                            <td>
+                            <td class="value">
                                 {{expiredText}}
                             </td>
                         </tr>
