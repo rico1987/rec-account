@@ -64,7 +64,7 @@ export default {
                             this.$router.push({ path: '/account-info', });
                         })
                         .catch((error) => {
-							this.InvokeDebug('ErrorMessge: 二维码登陆失败');
+							this.InvokeDebug('ErrorMessge: 二维码登录失败');
                             this.InvokeDebug(error);
                         });
                 }

@@ -116,3 +116,10 @@ export function validateEmail(data) {
         language: data.language,
     })}`);
 }
+
+
+export function validateAccount(data) {
+    return accountFetch.get(`validation${objToQuery(Object.assign(data, {
+        brand: 'Apowersoft',
+    }))}`);
+}

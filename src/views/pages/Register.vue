@@ -1,5 +1,5 @@
 <template>
-    <div class="account-register">
+    <div class="account-register" @keydown.enter="onKeyDown()">
         <Switcher class="account-register__switcher"></Switcher>
         <div class="account-register__container">
             <div class="account-register__way-switcher">
@@ -49,8 +49,8 @@
                 <p @click="submit()">注册</p>
             </div>
             <div class="account-password-less-login__links">
-                <span @click="goto('/qrcode')">二维码登陆</span>
-                <span @click="goto('/account-login')">账号密码登陆</span>
+                <span @click="goto('/qrcode')">二维码登录</span>
+                <span @click="goto('/account-login')">账号密码登录</span>
             </div>
         </div>
     </div>
@@ -276,6 +276,7 @@ export default {
                                 key: ele
                             })
                         });
+                        this.registerForm.areaCode = this.areacodes[0]['key'];
                     }
                 });
         },
@@ -287,6 +288,10 @@ export default {
 
         switchPasswordType: function() {
             this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
+        },
+
+        onKeyDown: function() {
+            this.submit();
         },
     },
 

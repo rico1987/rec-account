@@ -1,5 +1,5 @@
 <template>
-    <div class="account-account-login">
+    <div class="account-account-login" @keydown.enter="onKeyDown()">
         <Switcher class="account-account-login__switcher"></Switcher>
         <div class="account-account-login__container">
             <h2>登录</h2>
@@ -91,7 +91,11 @@ export default {
                     return false;
                 }
             });
-		},
+        },
+        
+        onKeyDown: function() {
+            this.submit();
+        },
     },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div class="account-password-less-login">
+    <div class="account-password-less-login" @keydown.enter="onKeyDown()">
         <Switcher class="account-password-less-login__switcher"></Switcher>
         <div class="account-password-less-login__container">
             <div class="account-password-less-login__way-switcher">
@@ -42,11 +42,11 @@
             </el-form>
            
             <div class="account-password-less-login__submit-btn">
-                <p @click="submit()">登陆</p>
+                <p @click="submit()">登录</p>
             </div>
             <div class="account-password-less-login__links">
                 <span @click="goto('/register')">注册</span>
-                <span @click="goto('/account-login')">账号密码登陆</span>
+                <span @click="goto('/account-login')">账号密码登录</span>
             </div>
         </div>
     </div>
@@ -252,6 +252,8 @@ export default {
                                 key: ele
                             })
                         });
+                        this.passwordLessLoginForm.areaCode = this.areacodes[0]['key'];
+
                     }
                 });
         },
@@ -263,6 +265,10 @@ export default {
 
         switchPasswordType: function() {
             this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
+        },
+
+        onKeyDown: function() {
+            this.submit();
         },
     },
 };

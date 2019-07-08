@@ -1,5 +1,5 @@
 <template>
-    <div class="account-reset-password">
+    <div class="account-reset-password" @keydown.enter="onKeyDown()">
         <Switcher class="account-reset-password__switcher"></Switcher>
         <div class="account-reset-password__container">
             <div class="account-reset-password__way-switcher">
@@ -54,7 +54,7 @@
 
 <script>
 import Switcher from '@/components/Switcher.vue';
-import { getAreaCodes, sendVcode } from '@/api/account';
+import { getAreaCodes, sendVcode, validateAccount } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
 
 export default {
@@ -186,6 +186,10 @@ export default {
         },
 
         sendCaptcha: function() {
+            const validatePost = {
+                language: this.$i18n.locale,
+            };
+           
             if (this.activeWay === 'phone') {
                 this.$refs['resetPasswordForm'].validateField('phone');
                 if (this.$refs['phone'].validateState === 'error') {
@@ -200,6 +204,10 @@ export default {
                 }
             }
 
+
+
+            // ----
+
             const post = {
                 scene: this.captchasScene,
                 language: this.$i18n.locale,
@@ -207,43 +215,68 @@ export default {
             if (this.activeWay === 'phone') {
                 post['telephone'] = this.resetPasswordForm.phone;
                 post['country_code'] = this.resetPasswordForm.areaCode.split(':')[0];
+                validatePost['telephone'] = this.resetPasswordForm.phone;
+                validatePost['country_code'] = this.resetPasswordForm.areaCode.split(':')[0];
             } else {
                 post['email'] = this.resetPasswordForm.email;
+                validatePost['email'] = this.resetPasswordForm.email;
             }
 
-            sendVcode(post)
+            validateAccount(validatePost)
                 .then((res) => {
-                    if (res.data.status === '1') {
+                    if (res.data && res.data.data && res.data.data.result === 2) {
+                        sendVcode(post)
+                            .then((res) => {
+                                if (res.data.status === '1') {
+                                    if (this.activeWay === 'phone') {
+                                        this.phoneTimeOutCount = this.resendInterval;
+                                        this.phoneTimeOutInterval = window.setInterval(() => {
+                                            this.phoneTimeOutCount --;
+                                            if (this.phoneTimeOutCount === 0) {
+                                                window.clearInterval(this.phoneTimeOutInterval);
+                                                this.phoneTimeOutInterval = null;
+                                            }
+                                        }, 1000);
+                                    } else if (this.activeWay === 'email') {
+                                        this.emailTimeOutCount = this.resendInterval;
+                                        this.emailTimeOutInterval = window.setInterval(() => {
+                                            this.emailTimeOutCount --;
+                                            if (this.emailTimeOutCount === 0) {
+                                                window.clearInterval(this.emailTimeOutInterval);
+                                                this.emailTimeOutInterval = null;
+                                            }
+                                        }, 1000);
+                                    }
+                                }
+                            })
+                            .catch((error) => {
+                                let errorMsg;
+                                if (error.status === -210) {
+                                    errorMsg = '同一邮箱每天只能发送三次验证码';
+                                } else if (error.status === -211) {
+                                    errorMsg = '同一手机号码每天只能发送三次验证码';
+                                } 
+                                this.$message.error(errorMsg)
+                                this.loading = false;
+                            });
+                    } else {
+                        let errorMsg;
                         if (this.activeWay === 'phone') {
-                            this.phoneTimeOutCount = this.resendInterval;
-                            this.phoneTimeOutInterval = window.setInterval(() => {
-                                this.phoneTimeOutCount --;
-                                if (this.phoneTimeOutCount === 0) {
-                                    window.clearInterval(this.phoneTimeOutInterval);
-                                    this.phoneTimeOutInterval = null;
-                                }
-                            }, 1000);
+                            errorMsg = '该手机号无法找到您的账号';
                         } else if (this.activeWay === 'email') {
-                            this.emailTimeOutCount = this.resendInterval;
-                            this.emailTimeOutInterval = window.setInterval(() => {
-                                this.emailTimeOutCount --;
-                                if (this.emailTimeOutCount === 0) {
-                                    window.clearInterval(this.emailTimeOutInterval);
-                                    this.emailTimeOutInterval = null;
-                                }
-                            }, 1000);
+                            errorMsg = '该邮箱无法找到您的账号';
                         }
+                        this.$message.error(errorMsg);
                     }
                 })
-                .catch((error) => {
+                .catch(() => {
                     let errorMsg;
-                    if (error.status === -210) {
-                        errorMsg = '同一邮箱每天只能发送三次验证码';
-                    } else if (error.status === -211) {
-                        errorMsg = '同一手机号码每天只能发送三次验证码';
-                    } 
-                    this.$message.error(errorMsg)
-                    this.loading = false;
+                    if (this.activeWay === 'phone') {
+                        errorMsg = '该手机号无法找到您的账号';
+                    } else if (this.activeWay === 'email') {
+                        errorMsg = '该邮箱无法找到您的账号';
+                    }
+                    this.$message.error(errorMsg);
                 });
         },
 
@@ -259,6 +292,8 @@ export default {
                                 key: ele
                             })
                         });
+                        this.resetPasswordForm.areaCode = this.areacodes[0]['key'];
+
                     }
                 });
         },
@@ -270,6 +305,10 @@ export default {
 
         switchPasswordType: function() {
             this.passwordType = this.passwordType === 'password' ? 'text' : 'password';
+        },
+
+        onKeyDown: function() {
+            this.submit();
         },
     },
 
