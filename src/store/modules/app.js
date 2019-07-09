@@ -7,6 +7,7 @@ const app = {
     state: {
         appInfo: {},
         licenseInfo: {},
+        willGoToBuy: false,
     },
     mutations: {
         SET_APP_INFO: (state, data) => {
@@ -16,8 +17,18 @@ const app = {
         SET_LICENSE_INFO: (state, data) => {
             state.licenseInfo = data;
         },
+
+        SET_WILL_GO_TO_BUY: (state, data) => {
+            state.willGoToBuy = data;
+        },
     },
     actions: { 
+
+        setWillGoToBuy({ commit, }, data) {
+            commit('SET_WILL_GO_TO_BUY', data);
+            Store.set('willGoToBuy', data);
+        },
+
         setAppInfo({ commit, }, data) {
             commit('SET_APP_INFO', data);
             Store.set('appInfo', data);

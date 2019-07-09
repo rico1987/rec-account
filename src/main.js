@@ -108,6 +108,10 @@ if (search) {
 
 let lang = getQueryValue('lang') || 'zh';
 
+if (page && page === 'buy' && !isLogined) {
+    store.dispatch('setWillGoToBuy', true);
+}
+
 // 获取html中定义的全局变量，决定跳转
 
 router.beforeEach((to, from, next) => {

@@ -74,7 +74,13 @@ export default {
                         password: this.accountLoginForm.password,
                         language: this.$i18n.locale,
                     }).then(() => {
-                        this.$router.push({ path: '/account-info', });
+                        const willGoToBuy = Store.get('willGoToBuy');
+                        if (willGoToBuy) {
+                            this.$store.dispatch('setWillGoToBuy', false);
+                            this.$router.push({ path: '/buy', });
+                        } else {
+                            this.$router.push({ path: '/account-info', });
+                        }
                         this.loading = false;
                     }).catch((error) => {
                         let errorMsg;
