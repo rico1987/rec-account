@@ -55,7 +55,9 @@ export default {
                 language: this.$i18n.locale,
             };
             this.GLOBAL.queryInterval = window.setInterval(async () => {
+                this.InvokeDebug('aaaa');
                 let { data } = await queryLoginState(postData);
+                this.InvokeDebug(data);
                 if (data.status === '1' && data.data && data.data.identity_token) {
                     this.$store.dispatch('SyncLoginState', data)
                         .then(() => {

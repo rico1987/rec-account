@@ -27,7 +27,7 @@
                 </el-form-item>
                 <el-form-item ref="captcha" prop="captcha">
                     <el-input placeholder="验证码" minlength="6" maxlength="10" v-model="resetPasswordForm.captcha">
-                        <span class="get-captcha-btn" slot="append" >
+                        <span class="get-captcha-btn" slot="append" :class="{'active': isCaptchaBtnActive}">
                             <span v-if="activeWay === 'phone'">
                                 <span v-if="phoneTimeOutInterval">{{ phoneTimeOutCount }}</span>
                                 <span class="btn" @click="sendCaptcha()" v-if="!phoneTimeOutInterval">获取</span>
@@ -193,13 +193,13 @@ export default {
             if (this.activeWay === 'phone') {
                 this.$refs['resetPasswordForm'].validateField('phone');
                 if (this.$refs['phone'].validateState === 'error') {
-                    this.$message.error(this.$refs['phone'].validateMessage);
+                    // this.$message.error(this.$refs['phone'].validateMessage);
                     return;
                 }
             } else if (this.activeWay === 'email') {
                 this.$refs['resetPasswordForm'].validateField('email');
                 if (this.$refs['email'].validateState === 'error') {
-                    this.$message.error(this.$refs['email'].validateMessage);
+                    // this.$message.error(this.$refs['email'].validateMessage);
                     return;
                 }
             }
@@ -248,9 +248,9 @@ export default {
                             .catch((error) => {
                                 let errorMsg;
                                 if (error.status === -210) {
-                                    errorMsg = '同一邮箱每天只能发送三次验证码';
+                                    errorMsg = '同一邮箱每天只能发送五次验证码';
                                 } else if (error.status === -211) {
-                                    errorMsg = '同一手机号码每天只能发送三次验证码';
+                                    errorMsg = '同一手机号码每天只能发送五次验证码';
                                 } 
                                 this.$message.error(errorMsg)
                                 this.loading = false;
@@ -310,6 +310,9 @@ export default {
     computed: {
         passwordAppendClass: function() {
             return this.passwordType === 'password' ? 'eye-closed' : 'eye-open';
+        },
+        isCaptchaBtnActive: function() {
+            return (this.activeWay === 'phone' && this.resetPasswordForm.areaCode && this.resetPasswordForm.phone) || (this.activeWay === 'email' && this.resetPasswordForm.email);
         },
     },
 };

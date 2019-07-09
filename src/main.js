@@ -13,6 +13,7 @@ import {
     Select,
     Option,
     Message,
+    Tooltip,
 } from 'element-ui';
 import './styles/themes/default/index.scss';
 import Layout from './views/layout/layout.vue';
@@ -60,6 +61,7 @@ Vue.use(FormItem);
 Vue.use(Input);
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(Tooltip);
 
 Vue.prototype.$message = Message;
 
@@ -73,11 +75,20 @@ Vue.prototype.InvokeDebug = InvokeDebug;
 let isLogined = false;
 
 InvokeApp('get-passport-info', {}, (res) => {
-	store.dispatch('setAppInfo', res && res.data.app_info);
-    if (res && res.data && res.data.user_info && res.data.user_info.identity_token) {
-		store.dispatch('UpdateIdentityToken', res.data.user_info.identity_token);
-		isLogined = true;
-		InvokeDebug('Login status: logined');
+    store.dispatch('setAppInfo', res && res.data.app_info);
+
+    if (res && res.data) {
+        if (res.data.user_info) {
+            store.dispatch('UpdateUserInfo', res.data.user_info);
+        }
+        if (res.data.user_info && res.data.user_info.identity_token) {
+            store.dispatch('UpdateIdentityToken', res.data.user_info.identity_token);
+            isLogined = true;
+            InvokeDebug('Login status: logined');
+        }
+        if (res.data.license_info) {
+            store.dispatch('setLicenseInfo', res.data.license_info);
+        }
     }
 });
 
@@ -100,6 +111,7 @@ let lang = getQueryValue('lang') || 'zh';
 // 获取html中定义的全局变量，决定跳转
 
 router.beforeEach((to, from, next) => {
+    InvokeDebug(to);
     const bodyWidth = to.meta.bodyWidth;
     const bodyHeight = to.meta.bodyHeight;
     if (bodyWidth && bodyHeight) {
@@ -108,26 +120,42 @@ router.beforeEach((to, from, next) => {
     }
     if (page) {
         if (page === 'buy') {
-			page = null;
+            page = null;
             if (isLogined) {
-                next({
-                    path: '/buy',
-                });
+                if (to.path === '/buy') {
+                    next();
+                } else {
+                    next({
+                        path: '/buy',
+                    });
+                }
             } else {
-                next({
-                    path: '/qrcode',
-                });
+                if (to.path === '/qrcode') {
+                    next();
+                } else {
+                    next({
+                        path: '/qrcode',
+                    });
+                }
             }
         } else {
-			page = null;
+            page = null;
             if (isLogined) {
-                next({
-                    path: '/account-info',
-                });
+                if (to.path === '/account-info') {
+                    next();
+                } else {
+                    next({
+                        path: '/account-info',
+                    });
+                }
             } else {
-                next({
-                    path: '/qrcode',
-                });
+                if (to.path === '/qrcode') {
+                    next();
+                } else {
+                    next({
+                        path: '/qrcode',
+                    });
+                }
             }
         }
     } else {

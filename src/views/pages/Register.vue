@@ -27,7 +27,7 @@
                 </el-form-item>
                 <el-form-item ref="captcha" prop="captcha">
                     <el-input placeholder="验证码" minlength="6" maxlength="10" v-model="registerForm.captcha">
-                        <span class="get-captcha-btn" slot="append" >
+                        <span class="get-captcha-btn" slot="append" :class="{'active': isCaptchaBtnActive}">
                             <span v-if="activeWay === 'phone'">
                                 <span v-if="phoneTimeOutInterval">{{ phoneTimeOutCount }}</span>
                                 <span class="btn" @click="sendCaptcha()" v-if="!phoneTimeOutInterval">获取</span>
@@ -48,9 +48,12 @@
             <div class="account-register__submit-btn">
                 <p @click="submit()">注册</p>
             </div>
-            <div class="account-password-less-login__links">
-                <span @click="goto('/qrcode')">二维码登录</span>
-                <span @click="goto('/account-login')">账号密码登录</span>
+            <div class="account-register__links">
+                <span></span>
+                <span @click="goto('/account-login')">登录</span>
+            </div>
+            <div class="account-register__privacy">
+                <p>注册即表示同意服务<span @click="open('https://www.apowersoft.cn/terms')">协议</span>、<span @click="open('https://www.apowersoft.cn/privacy')">隐私</span>和<span @click="open('https://www.apowersoft.cn/cookies-policy')">cookie声明</span>。</p>
             </div>
         </div>
     </div>
@@ -60,6 +63,7 @@
 import Switcher from '@/components/Switcher.vue';
 import { getAreaCodes, sendVcode } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
+import { openUrl } from '@/utils/invoke';
 
 export default {
     name: 'register',
@@ -134,6 +138,10 @@ export default {
     },
     methods: {
 
+        open: function(url) {
+            openUrl(url);
+        },
+
         goto: function(route) {
             this.$router.push(route);
         },
@@ -200,13 +208,13 @@ export default {
             if (this.activeWay === 'phone') {
                 this.$refs['registerForm'].validateField('phone');
                 if (this.$refs['phone'].validateState === 'error') {
-                    this.$message.error(this.$refs['phone'].validateMessage);
+                    // this.$message.error(this.$refs['phone'].validateMessage);
                     return;
                 }
             } else if (this.activeWay === 'email') {
                 this.$refs['registerForm'].validateField('email');
                 if (this.$refs['email'].validateState === 'error') {
-                    this.$message.error(this.$refs['email'].validateMessage);
+                    // this.$message.error(this.$refs['email'].validateMessage);
                     return;
                 }
             }
@@ -249,9 +257,9 @@ export default {
                 .catch((error) => {
                     let errorMsg;
                     if (error.status === -210) {
-                        errorMsg = '同一邮箱每天只能发送三次验证码';
+                        errorMsg = '同一邮箱每天只能发送五次验证码';
                     } else if (error.status === -211) {
-                        errorMsg = '同一手机号码每天只能发送三次验证码';
+                        errorMsg = '同一手机号码每天只能发送五次验证码';
                     } else if (error.status === -208) {
                         if (this.activeWay === 'email') {
 							errorMsg = '该邮箱已注册，可直接登录';
@@ -298,6 +306,10 @@ export default {
     computed: {
         passwordAppendClass: function() {
             return this.passwordType === 'password' ? 'eye-closed' : 'eye-open';
+        },
+
+        isCaptchaBtnActive: function() {
+            return (this.activeWay === 'phone' && this.registerForm.areaCode && this.registerForm.phone) || (this.activeWay === 'email' && this.registerForm.email);
         },
     },
 };

@@ -1,15 +1,15 @@
 <template>
     <div class="account-account-info">
-        <div class="account-account-info__container" v-loading.lock="loading">
-            <div @click="openMyAccount()" class="account-account-info__avatar" v-if="userInfo" :class="{'is-default': !userInfo.avatar && !userInfo.avatar_url}">
-                <img v-if="userInfo.avatar || userInfo.avatar_url" :src="userInfo.avatar || userInfo.avatar_url" />
-                <span v-if="!userInfo.avatar && !userInfo.avatar_url" class="default-avatar"></span>
+        <div class="account-account-info__container">
+            <div @click="openMyAccount()" class="account-account-info__avatar"  :class="{'is-default': userInfo && !userInfo.avatar && !userInfo.avatar_url}">
+                <img v-if="userInfo && userInfo.avatar || userInfo.avatar_url" :src="userInfo && (userInfo.avatar || userInfo.avatar_url)" />
+                <span v-if="userInfo && !userInfo.avatar && !userInfo.avatar_url" class="default-avatar"></span>
             </div>
             <div class="account-account-info__vip" :class="{'active': isVip}" @click="onClickCrown()">
 
             </div>
             <div class="account-account-info__info">
-                <div class="row">
+                <div class="row" style="display: flex; align-items: center;">
                     <el-dropdown>
                         <span class="el-dropdown-link">
                             {{ accountName }}<i class="el-icon-arrow-down el-icon--right"></i>
@@ -29,6 +29,7 @@
                             </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
+                    <span class="exit" @click="logout()"></span>
                 </div>
                 <div class="row">
                     <table>
@@ -38,14 +39,14 @@
                                 {{productLicenseType}}
                             </td>
                         </tr>
-                         <tr>
+                        <tr>
                             <td class="title">许可类型：</td>
                             <td class="value">
                                 {{passportLicenseType}}
-                                <span @click="refresh()" class="refresh-btn" :class="{'is-refreshing': isRefreshing}" v-if="!isVip"></span>
+                                <span @click="refresh()" class="refresh-btn" :class="{'is-refreshing': isRefreshing}" v-if="licenseInfo && !isVip"></span>
                             </td>
                         </tr>
-                        <tr v-if="(isActivated || isExpired) && !isTrial">
+                        <tr v-if="(isActivated || isExpired) && !isTrial && !isLifeTime">
                             <td class="title">有效期至：</td>
                             <td class="value">
                                 {{expiredText}}
@@ -56,7 +57,7 @@
                                 <span class="primary-btn" @click="onClickBuy()">续费</span>
                             </td>
                         </tr>
-                        <tr v-if="!isActivated || isExpired">
+                        <tr v-if="licenseInfo && (!isActivated || isExpired)">
                             <td>&nbsp;</td>
                             <td v-if="language === 'zh'">
                                 <span class="primary-btn" @click="onClickBuy()">开通VIP</span>
@@ -70,10 +71,10 @@
             </div>
         </div>
         <div class="account-account-info__links">
-            <span v-if="urls.faq" @click="gotoFaq()">常见问题</span>
-            <span v-if="urls.faq">|</span>
-            <span v-if="urls.forum" @click="gotoCommunity()">社区</span>
-            <span v-if="urls.forum">|</span>
+            <span v-if="urls && urls.faq" @click="gotoFaq()">常见问题</span>
+            <span v-if="urls && urls.faq">|</span>
+            <span v-if="urls && urls.forum" @click="gotoCommunity()">社区</span>
+            <span v-if="urls && urls.forum">|</span>
             <span @click="gotoFindVip()">找回VIP</span>
         </div>
         <div class="account-account-info__recommend" @click="gotoRecommended()">
@@ -106,8 +107,19 @@ export default {
 
     data() {
         return {
+            isVip: false,
+            isActivated: false,
+            isExpired: false,
+            isTrial: true,
+            isNearlyExpired: false,
+            isLifeTime: false,
+            productLicenseType: '',
+            passportLicenseType: '',
+            expiredText: '',
+            hasTrial: false,
+            accountName: '',
             language: null,
-            userInfo: null,
+            userInfo: {},
             licenseInfo: null,
             urls: null,
 			loading: false,
@@ -140,11 +152,13 @@ export default {
     },
 
     created: function() {
+        this.InvokeDebug(new Date());
         this.language = this.$i18n.locale;
         this.getAccountInfo();
         this.getLicenseInfo();
         this.getUrls();
         this.getRecommendProduct();
+        this.InvokeDebug(new Date());
     },
 
     methods: {
@@ -158,9 +172,10 @@ export default {
         },
 
         getAccountInfo: function() {
-            this.loading = true;
             this.userInfo = Store.get('userInfo');
-            this.loading = false;
+            const identity_token = Store.get('identity_token');
+            const accountPre = getAccountPreByIdentityToken(identity_token);    
+            this.accountName =  accountPre + (this.userInfo && (this.userInfo.nickname || this.userInfo.email.replace(/@.+/, '')));
         },
 
         getLicenseInfo: function() {
@@ -169,6 +184,26 @@ export default {
                 .then((data) => {
                     this.licenseInfo = data;
                     this.loading = false;
+                    this.isVip = this.licenseInfo && this.licenseInfo.is_activated == 1 && this.passportLicenseType !== 'trial';
+                    this.isActivated = parseInt(this.licenseInfo.is_activated) === 1;
+                    this.isExpired = this.licenseInfo && parseInt(this.licenseInfo.is_activated) == -2;
+                    this.isTrial = this.licenseInfo && this.licenseInfo.passport_license_type === 'trial';
+                    this.hasTrial = this.licenseInfo && this.licenseInfo.no_trial !== '1';
+                    const remainingDays = this.licenseInfo.remain_days || 0;
+                    this.isNearlyExpired = this.isVip && remainingDays > 0  && remainingDays < (this.WILL_EXPIRED_DAYS[this.passportLicenseType] || 3);
+                    this.productLicenseType = this.PRODUCT_LICENSE_TYPE_TEXT[this.licenseInfo.product_license_type] || this.PRODUCT_LICENSE_TYPE_TEXT['personal'];
+                    this.passportLicenseType = this.PASSPORT_LICENSE_TYPE_text[this.licenseInfo.passport_license_type.replace('multi-', '') || 'trial'];
+                    this.isLifeTime = this.licenseInfo.passport_license_type === 'lifetime';
+                    if (this.isExpired) {
+                        this.expiredText = '已过期';
+                    } else if (this.isNearlyExpired) {
+                        const remainingDays = this.licenseInfo.remain_days || 0;
+                        this.expiredText = `${remainingDays} 天后`;
+                    } else if (this.licenseInfo.passport_license_type === 'lifetime') {
+                        this.expiredText = '终身';
+                    } else {
+                        this.expiredText = this.licenseInfo.expire_date.replace(/T/, ' ').replace(/\.000/, '').replace(/-/g, '/').split(' ')[0];
+                    }
                 })
                 .catch((error) => {
                     this.$message.error(error.msg || '获取授权信息失败!');
@@ -242,6 +277,27 @@ export default {
                 .then((data) => {
                     this.licenseInfo = data;
                     this.isRefreshing = false;
+                    this.isVip = this.licenseInfo && this.licenseInfo.is_activated == 1 && this.passportLicenseType !== 'trial';
+                    this.isActivated = parseInt(this.licenseInfo.is_activated) === 1;
+                    this.isExpired = this.licenseInfo && parseInt(this.licenseInfo.is_activated) == -2;
+                    this.isTrial = this.licenseInfo && this.licenseInfo.passport_license_type === 'trial';
+                    this.hasTrial = this.licenseInfo && this.licenseInfo.no_trial !== '1';
+                    const remainingDays = this.licenseInfo.remain_days || 0;
+                    this.isNearlyExpired = this.isVip && remainingDays > 0  && remainingDays < (this.WILL_EXPIRED_DAYS[this.passportLicenseType] || 3);
+                    this.productLicenseType = this.PRODUCT_LICENSE_TYPE_TEXT[this.licenseInfo.product_license_type] || this.PRODUCT_LICENSE_TYPE_TEXT['personal'];
+                    this.passportLicenseType = this.PASSPORT_LICENSE_TYPE_text[this.licenseInfo.passport_license_type.replace('multi-', '') || 'trial'];
+
+                    if (this.isExpired) {
+                        this.expiredText = '已过期';
+                    }
+                    if (this.isNearlyExpired) {
+                        const remainingDays = this.licenseInfo.remain_days || 0;
+                        this.expiredText = `${remainingDays} 天后`;
+                    }
+                    if (this.licenseInfo.passport_license_type === 'lifetime') {
+                        this.expiredText = '终身';
+                    }
+                    this.expiredText = this.licenseInfo.expire_date.replace(/T/, ' ').replace(/\.000/, '').replace(/-/g, '/').split(' ')[0];
                 })
                 .catch((error) => {
                     this.$message.error(error.msg || '获取授权信息失败!');
@@ -249,65 +305,6 @@ export default {
                 });
 		},
 
-    },
-
-    computed: {
-
-        accountName: function() {
-            const identity_token = Store.get('identity_token');
-            const accountPre = getAccountPreByIdentityToken(identity_token);    
-            return accountPre + (this.userInfo.nickname || this.userInfo.email.replace(/@.+/, ''));
-        },
-
-        isVip: function() {
-            return this.licenseInfo && this.licenseInfo.is_activated == 1 && this.passportLicenseType !== 'trial';
-        },
-
-        isActivated: function() {
-            return parseInt(this.licenseInfo.is_activated) === 1;
-        },
-
-        isExpired: function() {
-            return this.licenseInfo && parseInt(this.licenseInfo.is_activated) == -2;
-		},
-		
-		isTrial: function() {
-			return this.licenseInfo && this.licenseInfo.passport_license_type === 'trial';
-		},
-
-		hasTrial: function() {
-			return this.licenseInfo && this.licenseInfo.no_trial !== '1';
-		},
-
-        isNearlyExpired: function() {
-            if (!this.isVip) {
-                return false;
-            }
-            const remainingDays = this.licenseInfo.remain_days || 0;
-            return remainingDays > 0  && remainingDays < (this.WILL_EXPIRED_DAYS[this.passportLicenseType] || 3);
-        },
-
-        productLicenseType: function() {
-            return this.PRODUCT_LICENSE_TYPE_TEXT[this.licenseInfo.product_license_type] || this.PRODUCT_LICENSE_TYPE_TEXT['personal'];
-        },
-
-        passportLicenseType: function() {
-            return this.PASSPORT_LICENSE_TYPE_text[this.licenseInfo.passport_license_type.replace('multi-', '') || 'trial'];
-        },
-
-        expiredText: function() {
-            if (this.isExpired) {
-                return '已过期';
-            }
-            if (this.isNearlyExpired) {
-                const remainingDays = this.licenseInfo.remain_days || 0;
-                return `${remainingDays} 天后`;
-            }
-            if (this.licenseInfo.passport_license_type === 'lifetime') {
-                return '终身';
-            }
-            return this.licenseInfo.expire_date.replace(/T/, ' ').replace(/\.000/, '').replace(/-/g, '/').split(' ')[0];
-        },
     },
 };
 </script>

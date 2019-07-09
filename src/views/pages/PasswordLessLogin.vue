@@ -27,7 +27,7 @@
                 </el-form-item>
                 <el-form-item ref="captcha" prop="captcha">
                     <el-input placeholder="验证码" minlength="6" maxlength="10" v-model="passwordLessLoginForm.captcha">
-                        <span class="get-captcha-btn" slot="append" >
+                        <span class="get-captcha-btn" slot="append" :class="{'active': isCaptchaBtnActive}">
                             <span v-if="activeWay === 'phone'">
                                 <span v-if="phoneTimeOutInterval">{{ phoneTimeOutCount }}</span>
                                 <span class="btn" @click="sendCaptcha()" v-if="!phoneTimeOutInterval">获取</span>
@@ -42,11 +42,11 @@
             </el-form>
            
             <div class="account-password-less-login__submit-btn">
-                <p @click="submit()">登录</p>
+                <p @click="submit()">免密码登录</p>
             </div>
             <div class="account-password-less-login__links">
-                <span @click="goto('/register')">注册</span>
                 <span @click="goto('/account-login')">账号密码登录</span>
+                <span></span>
             </div>
         </div>
     </div>
@@ -187,13 +187,13 @@ export default {
             if (this.activeWay === 'phone') {
                 this.$refs['passwordLessLoginForm'].validateField('phone');
                 if (this.$refs['phone'].validateState === 'error') {
-                    this.$message.error(this.$refs['phone'].validateMessage);
+                    // this.$message.error(this.$refs['phone'].validateMessage);
                     return;
                 }
             } else if (this.activeWay === 'email') {
                 this.$refs['passwordLessLoginForm'].validateField('email');
                 if (this.$refs['email'].validateState === 'error') {
-                    this.$message.error(this.$refs['email'].validateMessage);
+                    // this.$message.error(this.$refs['email'].validateMessage);
                     return;
                 }
             }
@@ -242,9 +242,9 @@ export default {
                             .catch((error) => {
                                 let errorMsg;
                                 if (error.status === -210) {
-                                    errorMsg = '同一邮箱每天只能发送三次验证码';
+                                    errorMsg = '同一邮箱每天只能发送五次验证码';
                                 } else if (error.status === -211) {
-                                    errorMsg = '同一手机号码每天只能发送三次验证码';
+                                    errorMsg = '同一手机号码每天只能发送五次验证码';
                                 } 
                                 this.$message.error(errorMsg)
                                 this.loading = false;
@@ -298,6 +298,12 @@ export default {
 
         onKeyDown: function() {
             this.submit();
+        },
+    },
+
+    computed: {
+        isCaptchaBtnActive: function() {
+            return (this.activeWay === 'phone' && this.passwordLessLoginForm.areaCode && this.passwordLessLoginForm.phone) || (this.activeWay === 'email' && this.passwordLessLoginForm.email);
         },
     },
 };

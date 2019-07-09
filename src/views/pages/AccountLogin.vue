@@ -1,8 +1,7 @@
 <template>
     <div class="account-account-login" @keydown.enter="onKeyDown()">
         <Switcher class="account-account-login__switcher"></Switcher>
-        <div class="account-account-login__container">
-            <h2>登录</h2>
+        <div class="account-account-login__container" style="margin-top: 50px;">
             <el-form ref="accountLoginForm" :model="accountLoginForm" :rules="rules">
                 <el-form-item prop="account">
                     <el-input placeholder="手机号/邮箱" minlength="6" maxlength="50" v-model="accountLoginForm.account"></el-input>
@@ -11,12 +10,16 @@
                     <el-input placeholder="密码" type="password" minlength="6" maxlength="50" v-model="accountLoginForm.password"></el-input>
                 </el-form-item>
             </el-form>
+            <div class="account-account-login__sub-links">
+                <span></span>
+                <span @click="goto('/reset-password')">忘记密码</span>
+            </div>
             <div class="account-account-login__submit-btn">
                 <p @click="submit()">登录</p>
             </div>
             <div class="account-account-login__links">
-                <span @click="goto('/reset-password')">忘记密码</span>
                 <span @click="goto('/password-less-login')">免密码登录</span>
+                <span @click="goto('/register')">注册</span>
             </div>
         </div>
         <ThirdParty class="account-account-login__third-party"></ThirdParty>

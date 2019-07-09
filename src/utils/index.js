@@ -384,6 +384,9 @@ export function getDomain(lang) {
 // * b facebook
 // * c twitter
 export function getAccountPreByIdentityToken(identity_token) {
+    if (!identity_token) {
+        return '';
+    }
     let accountPre;
     switch (identity_token[identity_token.length - 1]) {
         case '1':

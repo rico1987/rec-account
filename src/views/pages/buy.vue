@@ -3,43 +3,52 @@
         <div class="account-buy__container">
             <div class="type-switcher">
                 <span @click="switchType('personal')" :class="{'active': currentType === 'personal'}">个人</span>
-                <span @click="switchType('business')" :class="{'active': currentType === 'business'}">商业</span>
+                <span @click="switchType('business')" :class="{'active': currentType === 'business'}">
+                    商业
+                    <el-tooltip class="tooltip" effect="light" placement="top">
+                        <div slot="content" style="width: 350px;">
+                            <p class="font-size: 14px;">个人授权版和商业授权版有何区别？</p>
+                            <p class="font-size: 12px;">个人授权版供个人使用，不可用于商业盈利等相关活动。商业授权版供公司或企业使用，可用于公司商业展示等其他商业用途。</p>
+                        </div>
+                        <span></span>
+                    </el-tooltip>
+                </span>
                 <div class="active-bottom" :class="{'left': currentType === 'personal', 'right': currentType === 'business'}"></div>
             </div>
            
         </div>
         <div class="account-buy__license-container">
-            <div class="license-types" v-if="currentType === 'personal' && prices">
+            <div class="license-types" v-if="currentType === 'personal'">
                 <div class="lifetime hot" @click="setActiveProduct('18180124_L')" :class="{'active': activeProductId === '18180124_L'}">
                     <p class="title">终身</p>
-                    <p class="price"><span class="currency">￥</span><span class="number">{{prices.personal.current.l}}</span><span class="original">￥{{prices.personal.original.l}}</span></p>
+                    <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.l}}</span><span class="original">￥{{prices.personal.original.l}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
                 <div class="year" @click="setActiveProduct('18180123_Y')" :class="{'active': activeProductId === '18180123_Y'}">
                     <p class="title">年度</p>
-                    <p class="price"><span class="currency">￥</span><span class="number">{{prices.personal.current.y}}</span><span class="original">￥{{prices.personal.original.y}}</span></p>
+                    <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.y}}</span><span class="original">￥{{prices.personal.original.y}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
                 <div class="quarter" @click="setActiveProduct('18180194_Q')" :class="{'active': activeProductId === '18180194_Q'}">
                     <p class="title">季度</p>
-                    <p class="price"><span class="currency">￥</span><span class="number">{{prices.personal.current.q}}</span><span class="original">￥{{prices.personal.original.q}}</span></p>
+                    <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.q}}</span><span class="original">￥{{prices.personal.original.q}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
                 <div class="multi" @click="setActiveProduct('18180204_L')" :class="{'active': activeProductId === '18180204_L'}">
                     <p class="title">家庭终身版</p>
-                    <p class="price"><span class="currency">￥</span><span class="number">{{prices.personal.current.multi}}</span><span class="original">￥{{prices.personal.original.multi}}</span></p>
+                    <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.multi}}</span><span class="original">￥{{prices.personal.original.multi}}</span></p>
                     <p class="limit"><span>5</span>台电脑</p>
                 </div>
             </div>
             <div class="license-types business" v-if="currentType === 'business' && prices">
                 <div class="lifetime hot" @click="setActiveProduct('18180126_L')" :class="{'active': activeProductId === '18180126_L'}">
                     <p class="title">终身</p>
-                    <p class="price"><span class="currency">￥</span><span class="number">{{prices.business.current.l}}</span><span class="original">￥{{prices.business.original.l}}</span></p>
+                    <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.l}}</span><span class="original">￥{{prices.business.original.l}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
                 <div class="year" @click="setActiveProduct('18180125_Y')" :class="{'active': activeProductId === '18180125_Y'}">
                     <p class="title">年度</p>
-                    <p class="price"><span class="currency">￥</span><span class="number">{{prices.business.current.y}}</span><span class="original">￥{{prices.business.original.y}}</span></p>
+                    <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.y}}</span><span class="original">￥{{prices.business.original.y}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
                 <div class="quarter" @click="gotoBuy()">
@@ -60,7 +69,7 @@
                         <p>点击刷新</p>
                     </div>
                 </div>
-                <p v-if="qrcodeLoaded">支付金额：<span class="currency">￥</span><span class="mount">{{invoice_amount}}</span></p>
+                <p v-if="qrCodeLoaded">支付金额：<span class="currency">￥</span><span class="mount">{{invoice_amount}}</span></p>
 			</div>
 		</div>
     </div>
@@ -179,6 +188,8 @@ export default {
         },
 
         getTransactionId: function() {
+            window.clearTimeout(this.queryPayStatusTimeout);
+            this.queryPayStatusTimeout = null;
             if (!this.timeoutInterval) {
                 this.timeoutInterval = window.setInterval(() => {
                     const keys = Object.keys(this.payInfos);
@@ -228,8 +239,6 @@ export default {
                                 this.payInfos[this.activeProductId]['alipay_qr_loaded'] = true;
                                 this.$forceUpdate();
                             }.bind(this);
-                            window.clearTimeout(this.queryPayStatusTimeout);
-                            this.queryPayStatusTimeout = null;
                             this.queryOrderStatus();
                         }
 
@@ -239,10 +248,7 @@ export default {
                         this.InvokeDebug(error);
                     });
             } else {
-                window.clearTimeout(this.this.queryPayStatusTimeout);
-                this.queryPayStatusTimeout = null;
                 this.queryOrderStatus();
-                this.$forceUpdate();
             }
         },
 
@@ -250,37 +256,36 @@ export default {
             this.getTransactionId();
         },
 
-        queryOrderStatus: function() {
+        queryOrderStatus: async function() {
             const transaction_id = this.payInfos[this.activeProductId] && !this.payInfos[this.activeProductId]['isTimeout'] && this.payInfos[this.activeProductId]['transaction_id']    
             if (!transaction_id) {
                 return;
             }
-            queryOrderStatus(transaction_id)
-                .then((res) => {
-                    if (res.data && res.data.status === 1) {
-                        let data = res.data.data;
-                        if (!data || !data['order_detail']){
-                            this.queryPayStatusTimeout = window.setTimeout(() => {
-                                this.queryOrderStatus();
-                            }, 3000);
-                        }
+            let { data } = await queryOrderStatus(transaction_id)
+            if (data && data.status === 1) {
+                window.clearTimeout(this.queryPayStatusTimeout);
+                this.queryPayStatusTimeout = null;
+                if (!data.data || !data.data['order_detail']){
+                    this.queryPayStatusTimeout = window.setTimeout(() => {
+                        this.queryOrderStatus();
+                    }, 3000);
+                }
 
-                        const orderInfo = data['order_detail'];
-                        const orderStatus = orderInfo['transaction_status'];
+                const orderInfo = data.data['order_detail'];
+                const orderStatus = orderInfo['transaction_status'];
 
-                        if(orderStatus === 'unpaid'){
-                           this.queryPayStatusTimeout = window.setTimeout(() => {
-                               this.queryOrderStatus();
-                           }, 0);
-                        } else if(orderStatus === "complete"){
-                            this.onOrderPaid();
-                        } else if(orderStatus=== "refund"){
-                            this.$message.error('订单已退款');
-                        } else if(orderStatus === "closed"){
-                            this.$message.error('订单关闭');
-                        }
-                    }
-                });
+                if(orderStatus === 'unpaid'){
+                    this.queryPayStatusTimeout = window.setTimeout(() => {
+                        this.queryOrderStatus();
+                    }, 1000);
+                } else if(orderStatus === "complete"){
+                    this.onOrderPaid();
+                } else if(orderStatus=== "refund"){
+                    this.$message.error('订单已退款');
+                } else if(orderStatus === "closed"){
+                    this.$message.error('订单关闭');
+                }
+            }
         },
 
         onOrderPaid: async function() {
@@ -317,14 +322,6 @@ export default {
 
         invoice_amount: function() {
             return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'];
-        },
-
-        loading: function() {
-            if (this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId][this.payMethod + '_loaded']) {
-                return false;
-            } else {
-                return true;
-            }
         },
     },
 };

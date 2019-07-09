@@ -11,19 +11,32 @@
             position: relative;
             span{
                 display: inline-block;
+                position: relative;
                 font-size: 16px;
-                padding: 0 17px 8px;
+                line-height: 16px;
+                padding: 0 17px 7px;
                 width: 32px;
                 cursor: pointer;
                 &.active {
                     color: $primary;
+                }
+                .tooltip{
+                    position: absolute;
+                    display: inline-block;
+                    padding: 0;
+                    width: 12px;
+                    height: 12px;
+                    background: url('../../../assets/img/tooltip.svg') center no-repeat;
+                    background-size: contain;
+                    top: -2px;
+                    left: 54px;
                 }
             }
             .active-bottom{
                 position: absolute;
                 left: 0;
                 bottom: 0;
-                height: 2px;
+                height: 1px;
                 width: 64px;
                 background-color: $primary;
                 transition: all .5s ease-out;
@@ -56,7 +69,10 @@
                     width: 134px;
                     height: 116px;
 					border: 3px solid $primary;
-					position: relative;
+                    position: relative;
+                    .title{
+                        color: white!important;
+                    }
 					&::after{
 						content: '';
 						width: 0;
@@ -97,7 +113,7 @@
                     text-align: center;
                     font-size: 15px;
                     line-height: 15px;
-                    color: white;
+                    color: #ddd;
                 }
                 .link{
                     font-size: 14px;
@@ -116,23 +132,24 @@
                     }
                     .currency {
                         color: #F7BB5A;
-                        font-size: 9px;
+                        font-size: 12px;
                     }
                     .number {
                         color: #F7BB5A;
-                        font-size: 19px;
+                        font-size: 26px;
+                        font-weight: normal;
                     }
                     .original {
                         color: #999999;
                         text-decoration: line-through;
-                        font-size: 9px;
+                        font-size: 12px;
                     }
                 }
                 .limit {
                     text-align: center;
                     font-size: 14px;
                     line-height: 14px;
-                    margin-top: 27px;
+                    margin-top: 22px;
                     span{
                         color: white;
                     }
@@ -162,16 +179,23 @@
 				cursor: pointer;
 				&.weixin{
 					background: url('../../../assets/img/pay/weixin.svg') 12px center no-repeat;
-					background-size: 21%;
+                    background-size: 21%;
+                    &.active {
+                        cursor: auto;
+                        background-color: #333333;
+                        background-image: url('../../../assets/img/pay/weixin-active.svg');
+                    }
 				}
 				&.alipay{
 					background: url('../../../assets/img/pay/zhifubao.svg') 12px center no-repeat;
-					background-size: 21%;
+                    background-size: 21%;
+                    &.active {
+                        cursor: auto;
+                        background-color: #333333;
+                        background-image: url('../../../assets/img/pay/zhifubao-active.svg');
+                    }
 				}
-				&.active {
-					cursor: auto;
-					background-color: #333333;
-				}
+				
 			}
 		}
 		.qrcode-container{
@@ -187,7 +211,7 @@
                 width: 124px;
                 height: 124px;
                 border: 2px solid #6F6F6F;
-                margin-left: 35%;
+                margin-left: 29%;
                 margin-top: 22px;
                 position: relative;
                 img{
@@ -217,15 +241,16 @@
                 font-size: 14px;
                 display: inline-block;
                 position: absolute;
-                bottom: 24px;
-                left: 65%;
+                bottom: 22px;
+                left: 60%;
+                color: white;
                 span.currency{
                     color: #F7BB5A;
                     font-size: 12px;
                 }
                 span.mount{
                     color: #F7BB5A;
-                    font-size: 19px;
+                    font-size: 26px;
                 }
             }
 		}
