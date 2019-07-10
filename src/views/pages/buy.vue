@@ -19,34 +19,34 @@
         </div>
         <div class="account-buy__license-container">
             <div class="license-types" v-if="currentType === 'personal'">
-                <div class="lifetime hot" @click="setActiveProduct('18180124_L')" :class="{'active': activeProductId === '18180124_L'}">
+                <div class="lifetime hot" @click="setActiveProduct('18180124_L', 'l')" :class="{'active': activeProductId === '18180124_L'}">
                     <p class="title">终身</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.l}}</span><span class="original">￥{{prices.personal.original.l}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
-                <div class="year" @click="setActiveProduct('18180123_Y')" :class="{'active': activeProductId === '18180123_Y'}">
+                <div class="year" @click="setActiveProduct('18180123_Y', 'y')" :class="{'active': activeProductId === '18180123_Y'}">
                     <p class="title">年度</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.y}}</span><span class="original">￥{{prices.personal.original.y}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
-                <div class="quarter" @click="setActiveProduct('18180194_Q')" :class="{'active': activeProductId === '18180194_Q'}">
+                <div class="quarter" @click="setActiveProduct('18180194_Q', 'q')" :class="{'active': activeProductId === '18180194_Q'}">
                     <p class="title">季度</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.q}}</span><span class="original">￥{{prices.personal.original.q}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
-                <div class="multi" @click="setActiveProduct('18180204_L')" :class="{'active': activeProductId === '18180204_L'}">
+                <div class="multi" @click="setActiveProduct('18180204_L', 'multi')" :class="{'active': activeProductId === '18180204_L'}">
                     <p class="title">家庭终身版</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.multi}}</span><span class="original">￥{{prices.personal.original.multi}}</span></p>
                     <p class="limit"><span>5</span>台电脑</p>
                 </div>
             </div>
             <div class="license-types business" v-if="currentType === 'business' && prices">
-                <div class="lifetime hot" @click="setActiveProduct('18180126_L')" :class="{'active': activeProductId === '18180126_L'}">
+                <div class="lifetime hot" @click="setActiveProduct('18180126_L', 'l')" :class="{'active': activeProductId === '18180126_L'}">
                     <p class="title">终身</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.l}}</span><span class="original">￥{{prices.business.original.l}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
                 </div>
-                <div class="year" @click="setActiveProduct('18180125_Y')" :class="{'active': activeProductId === '18180125_Y'}">
+                <div class="year" @click="setActiveProduct('18180125_Y', 'y')" :class="{'active': activeProductId === '18180125_Y'}">
                     <p class="title">年度</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.y}}</span><span class="original">￥{{prices.business.original.y}}</span></p>
                     <p class="limit"><span>2</span>台电脑</p>
@@ -56,6 +56,11 @@
                     <p class="link">选择套餐</p>
                 </div>
             </div>
+        </div>
+        <div class="account-buy__coupon-input">
+            <input type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
+            <span class="coupon-btn" @click="useCoupon()">确认</span>
+            <span class="error" v-if="couponErrorMessage">{{couponErrorMessage}}</span>
         </div>
 		<div class="account-buy__pay-container">
 			<div class="pay-method">
@@ -69,7 +74,11 @@
                         <p>点击刷新</p>
                     </div>
                 </div>
-                <p v-if="qrCodeLoaded">支付金额：<span class="currency">￥</span><span class="mount">{{invoice_amount}}</span></p>
+                <p v-if="qrCodeLoaded">支付金额：
+                    <span class="currency">￥</span>
+                    <span class="mount">{{Math.floor(invoice_amount)}}</span>
+                    <span class="reduce" v-if="reduce">(已优惠{{reduce}}元)</span>
+                </p>
 			</div>
 		</div>
     </div>
@@ -77,7 +86,7 @@
 
 <script>
 import axios from 'axios';
-import { generateOrder, queryOrderStatus, getLicenseInfo } from '@/api/support';
+import { generateOrder, queryOrderStatus, getLicenseInfo, queryCoupon } from '@/api/support';
 import { openUrl } from '@/utils/invoke';
 import Store from '@/utils/storage';
 const queryUrl = 'https://www.apowersoft.cn/wp/wp-admin/admin-ajax.php?action=ajax_get_info_by_pro_name&pro_name=ApowerRec';
@@ -114,11 +123,15 @@ export default {
     data() {
         return {
             // loading: false,
+            couponErrorMessage: null,
+            coupon: '',
+            isValidCoupon: false,
             productInfo: null,
             prices: null,
 			currentType: 'personal',  // 'personal', 'business'
             payMethod: 'wxpay_qr', // 'wxpay_qr', 'alipay_qr'
             activeProductId: '18180124_L',
+            activeLicenseType: 'l',
             qrcodeLoaded: false,
             timeoutInterval: null,
             queryPayStatusTimeout: null,
@@ -148,21 +161,35 @@ export default {
                 } else {
                     this.activeProductId = '18180126_L';
                 }
-                this.getTransactionId();
+                this.activeLicenseType = 'l';
+                if (this.coupon) {
+                    this.useCoupon();
+                } else {
+                    this.getTransactionId();
+                }
             }
 		},
 		
 		switchPayMethod: function(method) {
             if (method !== this.payMethod) {
                 this.payMethod = method;
-                this.getTransactionId();
+                 if (this.coupon) {
+                    this.useCoupon();
+                } else {
+                    this.getTransactionId();
+                }
             }
         },
         
-        setActiveProduct: function(id) {
+        setActiveProduct: function(id, licenseType) {
+            this.activeLicenseType = licenseType;
             if (id !== this.activeProductId) {
                 this.activeProductId = id;
-                this.getTransactionId();
+                 if (this.coupon) {
+                    this.useCoupon();
+                } else {
+                    this.getTransactionId();
+                }
             }
         },
 
@@ -187,7 +214,7 @@ export default {
                 })
         },
 
-        getTransactionId: function() {
+        getTransactionId: function(forceUpdate = false) {
             window.clearTimeout(this.queryPayStatusTimeout);
             this.queryPayStatusTimeout = null;
             if (!this.timeoutInterval) {
@@ -204,7 +231,10 @@ export default {
                 }, 1000);
             }
             
-            if (!this.payInfos[this.activeProductId] || !this.payInfos[this.activeProductId]['transaction_id'] || this.payInfos[this.activeProductId]['isTimeout']) {
+            if (!this.payInfos[this.activeProductId] ||
+                !this.payInfos[this.activeProductId]['transaction_id'] ||
+                this.payInfos[this.activeProductId]['isTimeout'] ||
+                this.payInfos[this.activeProductId]['coupon'] !== this.coupon) {
                 this.loading = true;
                 this.qrcodeLoaded = false;
                 const identity_token = Store.get('identity_token');
@@ -213,11 +243,12 @@ export default {
                     product_id: this.activeProductId,
                     quantity: 1,
                 });
-                generateOrder('', products, identity_token)
+                generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token)
                     .then((res) => {
                         this.loading = false;
                         if (res.data.status === 1) {
                             this.payInfos[this.activeProductId] = {
+                                'coupon': this.coupon,
                                 'isTimeout': false,
                                 'timeoutCount': this.transactionIdTimeout,
                                 'transaction_id': res.data.data.transaction_id,
@@ -300,7 +331,36 @@ export default {
                 this.$store.dispatch('setLicenseInfo', data.data.license_info);
                 this.$router.push({ path: '/account-info', });
             }
-        },  
+        },
+
+        useCoupon: function() {
+            this.couponErrorMessage = null;
+            if (!this.coupon) {
+                this.couponErrorMessage = '请输入优惠码';
+                return;
+            } else if (this.coupon.length < 4) {
+                this.couponErrorMessage = '无效优惠码';
+                return;
+            }
+
+            const identity_token = Store.get('identity_token');
+            const products = [];
+            products.push({
+                product_id: this.activeProductId,
+                quantity: 1,
+            });
+            queryCoupon(this.coupon, products, identity_token)
+                .then((res) => {
+                    if (res.data && res.data.info === 'success') {
+                        this.isValidCoupon = true;
+                    } else {
+                        this.couponErrorMessage = '无效优惠券';
+                        this.isValidCoupon = false;
+                    }
+                    this.getTransactionId(true);
+                });
+            
+        },
     },
 
     computed: {
@@ -322,6 +382,19 @@ export default {
 
         invoice_amount: function() {
             return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'];
+        },
+
+        reduce: function() {
+            if (!this.payInfos ||
+                !this.payInfos[this.activeProductId] ||
+                !this.payInfos[this.activeProductId]['invoice_amount'] ||
+                !this.prices ||
+                !this.prices[this.currentType] ||
+                !this.prices[this.currentType]['current']) {
+                return null;
+            } else {
+                return Math.floor(this.prices[this.currentType]['current'][this.activeLicenseType] - this.payInfos[this.activeProductId]['invoice_amount']) || 0;
+            }
         },
     },
 };

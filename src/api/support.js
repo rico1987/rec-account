@@ -78,3 +78,15 @@ export function generateOrder(coupon_code, products, identity_token) {
     }
     return supportFetch.post('/buy/apowersoft?action=generate_order&nocache=1', postData);
 }
+
+export function queryCoupon(coupon_code, products, identity_token) {
+    let postData = new FormData();
+    postData.append('coupon_code', coupon_code);
+    postData.append('type', 'attachment');
+    postData.append('identity_token', identity_token);
+    for (let i = 0, l = products.length; i < l; i++) {
+        postData.append(`product[${i}][product_id]`, products[i]['product_id']);
+        postData.append(`product[${i}][quantity]`, products[i]['quantity']);
+    }
+    return supportFetch.post('/buy/apowersoft?action=query_coupon&nocache=1', postData);
+}

@@ -60,14 +60,14 @@
 
             >div {
                 width: 140px;
-                height: 122px;
+                height: 112px;
                 background-color: #333333;
                 box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.5);
                 cursor: pointer;
                 &.active {
                     background-color: black;
                     width: 134px;
-                    height: 116px;
+                    height: 106px;
 					border: 3px solid $primary;
                     position: relative;
                     .title{
@@ -147,9 +147,9 @@
                 }
                 .limit {
                     text-align: center;
-                    font-size: 14px;
-                    line-height: 14px;
-                    margin-top: 22px;
+                    font-size: 12px;
+                    line-height: 12px;
+                    margin-top: 18px;
                     span{
                         color: white;
                     }
@@ -163,10 +163,50 @@
                 }
             }
         }
-	}
+    }
+    
+    @include e(coupon-input) {
+        height: 36px;
+        margin-top: 16px;
+        border: 1px solid #404040;
+        position: relative;
+        .error{
+            position: absolute;
+            height: 100%;
+            display: inline-block;
+            left: 100px;
+            height: 36px;
+            line-height: 36px;
+            font-size: 12px;
+            color: red;
+        }
+        input {
+            color: white;
+            display: block;
+            float: left;
+            background: #333333;
+            border: none;
+            width: calc(100% - 147px);
+            height: 100%;
+            padding-left: 10px;
+        }
+        .coupon-btn{
+            display: inline-block;
+            text-align: center;
+            width: 137px;
+            height: 100%;
+            line-height: 36px;
+            background-color: #111111;
+            color: #b8b8b8;
+            cursor: pointer;
+            &:hover{
+                color: white;
+            }
+        }
+    }
 	
 	@include e(pay-container) {
-		margin-top: 25px;
+		margin-top: 12px;
 		display: flex;
 		.pay-method{
 			flex: 0.146;
@@ -200,7 +240,7 @@
 		}
 		.qrcode-container{
 			flex: 0.854;
-			height: 171px;
+			height: 145px;
             background-color: #333333;
             position: relative;
 			.el-loading-mask{
@@ -208,11 +248,11 @@
             }
             .qrcode{
                 display: inline-block;
-                width: 124px;
-                height: 124px;
+                width: 104px;
+                height: 104px;
                 border: 2px solid #6F6F6F;
-                margin-left: 29%;
-                margin-top: 22px;
+                margin-left: 30.5%;
+                margin-top: 20px;
                 position: relative;
                 img{
                     width: 100%;
@@ -241,8 +281,8 @@
                 font-size: 14px;
                 display: inline-block;
                 position: absolute;
-                bottom: 22px;
-                left: 60%;
+                bottom: 14px;
+                left: 55%;
                 color: white;
                 span.currency{
                     color: #F7BB5A;
@@ -251,6 +291,10 @@
                 span.mount{
                     color: #F7BB5A;
                     font-size: 26px;
+                }
+                span.reduce{
+                    margin-left: 5px;
+                    font-size: 12px;
                 }
             }
 		}
