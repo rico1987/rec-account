@@ -178,6 +178,7 @@ export default {
 
         getLicenseInfo: function() {
             this.loading = true;
+
             this.$store.dispatch('getLicenseInfo', this.$i18n.locale)
                 .then((data) => {
                     this.licenseInfo = data;

@@ -1,5 +1,6 @@
 import qs from 'qs';
 import supportFetch from '../utils/supportFetch';
+import { InvokeDebug } from '../utils/invoke';
 
 export function getLicenseInfo(language) {
     return supportFetch.post('/account', qs.stringify({
@@ -69,14 +70,22 @@ export function queryOrderStatus(transaction_id,) {
 
 export function generateOrder(coupon_code, products, identity_token) {
     let postData = new FormData();
-    postData.append('coupon_code', coupon_code);
+    if (coupon_code) {
+        postData.append('coupon_code', coupon_code);
+    }
     postData.append('type', 'attachment');
+    InvokeDebug(identity_token);
     postData.append('identity_token', identity_token);
+    InvokeDebug(Object.prototype.toString.call(postData))
+    InvokeDebug(Object.prototype.toString.call(postData.get));
+    InvokeDebug('vvvv');
     for (let i = 0, l = products.length; i < l; i++) {
         postData.append(`product[${i}][product_id]`, products[i]['product_id']);
         postData.append(`product[${i}][quantity]`, products[i]['quantity']);
     }
-    return supportFetch.post('/buy/apowersoft?action=generate_order&nocache=1', postData);
+    InvokeDebug('postData');
+    InvokeDebug(postData.get('identity_token'));
+    return supportFetch.post(`/buy/apowersoft?action=generate_order&nocache=1`, postData);
 }
 
 export function queryCoupon(coupon_code, products, identity_token) {

@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { login, register, resetPassword, passwordLessLogin, loginByToken, } from '@/api/account';
 import { getUnlimitedVipInfo, } from '@/api/support';
 import Store from '@/utils/storage';
-import { InvokeApp } from '@/utils/invoke';
+import { InvokeApp, InvokeDebug } from '@/utils/invoke';
 
 const user = {
     state: {
@@ -56,7 +56,7 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-						Store.set('userInfo', data.data.user);
+                        Store.set('userInfo', data.data.user);
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),
@@ -110,7 +110,7 @@ const user = {
                         commit('SET_USER_INFO', data.data.user);
                         Store.set('api_token', data.data.api_token);
                         Store.set('identity_token', data.data.identity_token);
-						Store.set('userInfo', data.data.user);
+                        Store.set('userInfo', data.data.user);
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: Object.assign(data.data.user, {identity_token: data.data.identity_token}),

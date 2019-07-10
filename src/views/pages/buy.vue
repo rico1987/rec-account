@@ -59,7 +59,7 @@
         </div>
         <div class="account-buy__coupon-input">
             <input type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
-            <span class="coupon-btn" :class="{'loading': validCouponLoading}" @click="useCoupon()"><span v-if="!validCouponLoading">确认</span></span></span>
+            <span class="coupon-btn" :class="{'loading': validCouponLoading}" @click="useCoupon()"><span v-if="!validCouponLoading">确认</span></span>
             <span class="error" v-if="couponErrorMessage">{{couponErrorMessage}}</span>
         </div>
 		<div class="account-buy__pay-container">
@@ -149,9 +149,22 @@ export default {
     },
 
     created: function() {
+    },
+
+    mounted: function() {
+        this.qrCodeUrl = null;
+        this.payInfos = {
+            '18180124_L': {},
+            '18180204_L': {},
+            '18180194_Q': {},
+            '18180123_Y': {},
+            '18180126_L': {},
+            '18180125_Y': {},
+        };
 		this.getProductsInfo();
         this.getTransactionId();
     },
+
     methods: {
 
         switchType: function(type) {
@@ -230,7 +243,7 @@ export default {
                     }
                 }, 1000);
             }
-            
+
             if (!this.payInfos[this.activeProductId] ||
                 !this.payInfos[this.activeProductId]['transaction_id'] ||
                 this.payInfos[this.activeProductId]['isTimeout'] ||
@@ -243,8 +256,14 @@ export default {
                     product_id: this.activeProductId,
                     quantity: 1,
                 });
+                this.InvokeDebug('---------')
+                this.InvokeDebug({
+                    products,
+                    identity_token,
+                })
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token)
                     .then((res) => {
+                        this.InvokeDebug(res);
                         this.loading = false;
                         if (res.data.status === 1) {
                             this.payInfos[this.activeProductId] = {
