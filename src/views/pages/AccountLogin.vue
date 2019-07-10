@@ -30,6 +30,7 @@
 import Switcher from '@/components/Switcher.vue';
 import ThirdParty from '@/components/ThirdParty.vue';
 import { isEmail } from '@/utils/is';
+import Store from '@/utils/storage';
 
 export default {
     name: 'accountLogin',

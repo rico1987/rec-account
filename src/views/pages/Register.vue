@@ -64,6 +64,8 @@ import Switcher from '@/components/Switcher.vue';
 import { getAreaCodes, sendVcode } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
 import { openUrl } from '@/utils/invoke';
+import Store from '@/utils/storage';
+
 
 export default {
     name: 'register',

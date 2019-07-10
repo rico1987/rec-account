@@ -115,7 +115,6 @@ if (page && page === 'buy' && !isLogined) {
 // 获取html中定义的全局变量，决定跳转
 
 router.beforeEach((to, from, next) => {
-    InvokeDebug(to);
     const bodyWidth = to.meta.bodyWidth;
     const bodyHeight = to.meta.bodyHeight;
     if (bodyWidth && bodyHeight) {

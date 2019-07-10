@@ -13,6 +13,8 @@
 <script>
 import Switcher from '@/components/Switcher.vue';
 import { getQrCode, queryLoginState } from '@/api/account';
+import Store from '@/utils/storage';
+
 
 export default {
     name: 'qrCode',
@@ -55,7 +57,6 @@ export default {
                 language: this.$i18n.locale,
             };
             this.GLOBAL.queryInterval = window.setInterval(async () => {
-                this.InvokeDebug('aaaa');
                 let { data } = await queryLoginState(postData);
                 this.InvokeDebug(data);
                 if (data.status === '1' && data.data && data.data.identity_token) {
@@ -63,7 +64,14 @@ export default {
                         .then(() => {
                             window.clearInterval(this.GLOBAL.queryInterval);
                             this.GLOBAL.queryInterval = null;
-                            this.$router.push({ path: '/account-info', });
+                            const willGoToBuy = Store.get('willGoToBuy');
+                            if (willGoToBuy) {
+                                this.$store.dispatch('setWillGoToBuy', false);
+                                this.$router.push({ path: '/buy', });
+                            } else {
+                                this.$router.push({ path: '/account-info', });
+                            }
+                            this.loading = false;
                         })
                         .catch((error) => {
 							this.InvokeDebug('ErrorMessge: 二维码登录失败');

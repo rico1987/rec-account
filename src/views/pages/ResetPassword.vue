@@ -56,6 +56,8 @@
 import Switcher from '@/components/Switcher.vue';
 import { getAreaCodes, sendVcode, validateAccount } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
+import Store from '@/utils/storage';
+
 
 export default {
     name: 'resetPassword',
