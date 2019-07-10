@@ -84,7 +84,6 @@ InvokeApp('get-passport-info', {}, (res) => {
         if (res.data.user_info && res.data.user_info.identity_token) {
             store.dispatch('UpdateIdentityToken', res.data.user_info.identity_token);
             isLogined = true;
-            InvokeDebug('Login status: logined');
         }
         if (res.data.license_info) {
             store.dispatch('setLicenseInfo', res.data.license_info);

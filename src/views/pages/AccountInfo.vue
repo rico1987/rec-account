@@ -152,13 +152,11 @@ export default {
     },
 
     created: function() {
-        this.InvokeDebug(new Date());
         this.language = this.$i18n.locale;
         this.getAccountInfo();
         this.getLicenseInfo();
         this.getUrls();
         this.getRecommendProduct();
-        this.InvokeDebug(new Date());
     },
 
     methods: {

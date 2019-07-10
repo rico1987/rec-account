@@ -58,7 +58,6 @@ export default {
             };
             this.GLOBAL.queryInterval = window.setInterval(async () => {
                 let { data } = await queryLoginState(postData);
-                this.InvokeDebug(data);
                 if (data.status === '1' && data.data && data.data.identity_token) {
                     this.$store.dispatch('SyncLoginState', data)
                         .then(() => {

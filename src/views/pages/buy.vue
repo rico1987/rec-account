@@ -59,7 +59,7 @@
         </div>
         <div class="account-buy__coupon-input">
             <input type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
-            <span class="coupon-btn" @click="useCoupon()">确认</span>
+            <span class="coupon-btn" :class="{'loading': validCouponLoading}" @click="useCoupon()"><span v-if="!validCouponLoading">确认</span></span></span>
             <span class="error" v-if="couponErrorMessage">{{couponErrorMessage}}</span>
         </div>
 		<div class="account-buy__pay-container">
@@ -125,6 +125,7 @@ export default {
             // loading: false,
             couponErrorMessage: null,
             coupon: '',
+            validCouponLoading: false,
             isValidCoupon: false,
             productInfo: null,
             prices: null,
@@ -214,7 +215,7 @@ export default {
                 })
         },
 
-        getTransactionId: function(forceUpdate = false) {
+        getTransactionId: function() {
             window.clearTimeout(this.queryPayStatusTimeout);
             this.queryPayStatusTimeout = null;
             if (!this.timeoutInterval) {
@@ -227,7 +228,6 @@ export default {
                             this.payInfos[keys[i]]['isTimeout'] = true;
                         }
                     }
-                    this.InvokeDebug(this.payInfos);
                 }, 1000);
             }
             
@@ -349,6 +349,7 @@ export default {
                 product_id: this.activeProductId,
                 quantity: 1,
             });
+            this.validCouponLoading = true;
             queryCoupon(this.coupon, products, identity_token)
                 .then((res) => {
                     if (res.data && res.data.info === 'success') {
@@ -357,7 +358,8 @@ export default {
                         this.couponErrorMessage = '无效优惠券';
                         this.isValidCoupon = false;
                     }
-                    this.getTransactionId(true);
+                    this.validCouponLoading = false;
+                    this.getTransactionId();
                 });
             
         },

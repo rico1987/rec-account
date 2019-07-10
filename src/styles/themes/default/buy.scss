@@ -178,7 +178,7 @@
             height: 36px;
             line-height: 36px;
             font-size: 12px;
-            color: red;
+            color: #F25657;
         }
         input {
             color: white;
@@ -201,6 +201,31 @@
             cursor: pointer;
             &:hover{
                 color: white;
+            }
+            &.loading{
+                position: relative;
+                &::before{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: rgba(0, 0, 0, 0.6);
+                }
+                &::after{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    width: 24px;
+                    height: 24px;
+                    margin: auto;
+                    background: url('../../../assets/img/loading-white.png') no-repeat center center/24px auto;
+                    animation: rotate 2s linear infinite;
+                }
             }
         }
     }

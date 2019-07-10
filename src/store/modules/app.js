@@ -44,7 +44,6 @@ const app = {
                 getLicenseInfo(language).then((response) => {
                     const data = response.data;
                     if (data && data.status === 1) {
-						InvokeDebug(data);
                         InvokeApp('update-passport-info', {
                             'data': {
 								user_info: data.data && data.data.user_info ? data.data.user_info : {},
