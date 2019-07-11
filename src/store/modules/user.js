@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { login, register, resetPassword, passwordLessLogin, loginByToken, } from '@/api/account';
 import { getUnlimitedVipInfo, } from '@/api/support';
 import Store from '@/utils/storage';
-import { InvokeApp, InvokeDebug } from '@/utils/invoke';
+import { InvokeApp } from '@/utils/invoke';
 
 const user = {
     state: {

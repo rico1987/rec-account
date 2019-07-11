@@ -189,6 +189,7 @@
             width: calc(100% - 147px);
             height: 100%;
             padding-left: 10px;
+            outline: none;
         }
         .coupon-btn{
             display: inline-block;
@@ -196,10 +197,12 @@
             width: 137px;
             height: 100%;
             line-height: 36px;
+            font-size: 14px;
             background-color: #111111;
             color: #b8b8b8;
             cursor: pointer;
-            &:hover{
+            &.active{
+                background: $primary;
                 color: white;
             }
             &.loading{
@@ -246,6 +249,7 @@
 					background: url('../../../assets/img/pay/weixin.svg') 12px center no-repeat;
                     background-size: 21%;
                     &.active {
+                        color: white;
                         cursor: auto;
                         background-color: #333333;
                         background-image: url('../../../assets/img/pay/weixin-active.svg');
@@ -255,6 +259,7 @@
 					background: url('../../../assets/img/pay/zhifubao.svg') 12px center no-repeat;
                     background-size: 21%;
                     &.active {
+                        color: white;
                         cursor: auto;
                         background-color: #333333;
                         background-image: url('../../../assets/img/pay/zhifubao-active.svg');
@@ -303,10 +308,10 @@
                 }
             }
             >p{
-                font-size: 14px;
+                font-size: 12px;
                 display: inline-block;
                 position: absolute;
-                bottom: 14px;
+                bottom: 16px;
                 left: 55%;
                 color: white;
                 span.currency{
@@ -315,9 +320,10 @@
                 }
                 span.mount{
                     color: #F7BB5A;
-                    font-size: 26px;
+                    font-size: 20px;
                 }
                 span.reduce{
+                    color: #999999;
                     margin-left: 5px;
                     font-size: 12px;
                 }

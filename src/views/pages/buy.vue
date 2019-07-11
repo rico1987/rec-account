@@ -59,7 +59,7 @@
         </div>
         <div class="account-buy__coupon-input">
             <input type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
-            <span class="coupon-btn" :class="{'loading': validCouponLoading}" @click="useCoupon()"><span v-if="!validCouponLoading">确认</span></span>
+            <span class="coupon-btn" :class="{'loading': validCouponLoading, 'active': coupon}" @click="useCoupon()"><span v-if="!validCouponLoading">确认</span></span>
             <span class="error" v-if="couponErrorMessage">{{couponErrorMessage}}</span>
         </div>
 		<div class="account-buy__pay-container">
@@ -76,8 +76,8 @@
                 </div>
                 <p v-if="qrCodeLoaded">支付金额：
                     <span class="currency">￥</span>
-                    <span class="mount">{{Math.floor(invoice_amount)}}</span>
-                    <span class="reduce" v-if="reduce">(已优惠{{reduce}}元)</span>
+                    <span class="mount">{{invoice_amount}}</span>
+                    <span class="reduce" v-if="reduce">(已优惠 {{reduce}}元)</span>
                 </p>
 			</div>
 		</div>
@@ -152,7 +152,6 @@ export default {
     },
 
     mounted: function() {
-        this.qrCodeUrl = null;
         this.payInfos = {
             '18180124_L': {},
             '18180204_L': {},
@@ -256,14 +255,8 @@ export default {
                     product_id: this.activeProductId,
                     quantity: 1,
                 });
-                this.InvokeDebug('---------')
-                this.InvokeDebug({
-                    products,
-                    identity_token,
-                })
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token)
                     .then((res) => {
-                        this.InvokeDebug(res);
                         this.loading = false;
                         if (res.data.status === 1) {
                             this.payInfos[this.activeProductId] = {
@@ -402,7 +395,7 @@ export default {
         },
 
         invoice_amount: function() {
-            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'];
+            return Math.floor((this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount']) * 100) / 100;
         },
 
         reduce: function() {
@@ -414,7 +407,7 @@ export default {
                 !this.prices[this.currentType]['current']) {
                 return null;
             } else {
-                return Math.floor(this.prices[this.currentType]['current'][this.activeLicenseType] - this.payInfos[this.activeProductId]['invoice_amount']) || 0;
+                return Math.floor((this.prices[this.currentType]['current'][this.activeLicenseType] - this.payInfos[this.activeProductId]['invoice_amount']) * 100) / 100;
             }
         },
     },

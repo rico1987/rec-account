@@ -74,17 +74,11 @@ export function generateOrder(coupon_code, products, identity_token) {
         postData.append('coupon_code', coupon_code);
     }
     postData.append('type', 'attachment');
-    InvokeDebug(identity_token);
     postData.append('identity_token', identity_token);
-    InvokeDebug(Object.prototype.toString.call(postData))
-    InvokeDebug(Object.prototype.toString.call(postData.get));
-    InvokeDebug('vvvv');
     for (let i = 0, l = products.length; i < l; i++) {
         postData.append(`product[${i}][product_id]`, products[i]['product_id']);
         postData.append(`product[${i}][quantity]`, products[i]['quantity']);
     }
-    InvokeDebug('postData');
-    InvokeDebug(postData.get('identity_token'));
     return supportFetch.post(`/buy/apowersoft?action=generate_order&nocache=1`, postData);
 }
 
