@@ -107,9 +107,6 @@ if (search) {
 
 let lang = getQueryValue('lang') || 'zh';
 
-if (page && page === 'buy' && !isLogined) {
-    store.dispatch('setWillGoToBuy', true);
-}
 
 // 获取html中定义的全局变量，决定跳转
 
@@ -123,22 +120,12 @@ router.beforeEach((to, from, next) => {
     if (page) {
         if (page === 'buy') {
             page = null;
-            if (isLogined) {
-                if (to.path === '/buy') {
-                    next();
-                } else {
-                    next({
-                        path: '/buy',
-                    });
-                }
+            if (to.path === '/buy') {
+                next();
             } else {
-                if (to.path === '/qrcode') {
-                    next();
-                } else {
-                    next({
-                        path: '/qrcode',
-                    });
-                }
+                next({
+                    path: '/buy',
+                });
             }
         } else {
             page = null;

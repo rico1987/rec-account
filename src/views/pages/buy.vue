@@ -40,7 +40,7 @@
                     <p class="limit"><span>5</span>台电脑</p>
                 </div>
             </div>
-            <div class="license-types business" v-if="currentType === 'business' && prices">
+            <div class="license-types business" v-if="currentType === 'business'">
                 <div class="lifetime hot" @click="setActiveProduct('18180126_L', 'l')" :class="{'active': activeProductId === '18180126_L'}">
                     <p class="title">终身</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.l}}</span><span class="original">￥{{prices.business.original.l}}</span></p>
@@ -57,8 +57,11 @@
                 </div>
             </div>
         </div>
-        <div class="account-buy__coupon-input">
-            <input type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
+        <div class="account-buy__coupon-input" :class="{'is-tip': !isShowCouponInput}" v-if="!isShowCouponInput">
+            <p @click="showCouponInput()">请输入优惠码</p>
+        </div>
+        <div class="account-buy__coupon-input" v-if="isShowCouponInput">
+            <input ref="couponInput" type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
             <span class="coupon-btn" :class="{'loading': validCouponLoading, 'active': coupon}" @click="useCoupon()"><span v-if="!validCouponLoading">确认</span></span>
             <span class="error" v-if="couponErrorMessage">{{couponErrorMessage}}</span>
         </div>
@@ -68,11 +71,14 @@
 				<p class="alipay" @click="switchPayMethod('alipay_qr')" :class="{'active': payMethod === 'alipay_qr'}">支付宝</p>
 			</div>
 			<div class="qrcode-container">
-                <div class="qrcode" v-loading.lock="!qrCodeLoaded">
+                <div class="qrcode" v-if="isLogined" v-loading.lock="!qrCodeLoaded">
                     <img v-if="qrCodeUrl" :src="qrCodeUrl" />
                     <div class="refresh" v-if="isTimeout && qrCodeLoaded" @click="refresh()">
                         <p>点击刷新</p>
                     </div>
+                </div>
+                <div class="qrcode placeholder" v-if="!isLogined" @click="gotoLogin()">
+                    
                 </div>
                 <p v-if="qrCodeLoaded">支付金额：
                     <span class="currency">￥</span>
@@ -123,6 +129,9 @@ export default {
     data() {
         return {
             // loading: false,
+            appInfo: null,
+            isLogined: false,
+            isShowCouponInput: false,
             couponErrorMessage: null,
             coupon: '',
             validCouponLoading: false,
@@ -149,6 +158,8 @@ export default {
     },
 
     created: function() {
+        this.appInfo = Store.get('appInfo');
+        this.InvokeDebug(this.appInfo);
     },
 
     mounted: function() {
@@ -160,11 +171,29 @@ export default {
             '18180126_L': {},
             '18180125_Y': {},
         };
-		this.getProductsInfo();
-        this.getTransactionId();
+        this.getProductsInfo();
+        
+
+        const identity_token = Store.get('identity_token');
+        this.isLogined = !!identity_token;
+        if (this.isLogined) {
+            this.getTransactionId();
+        }   
     },
 
     methods: {
+
+        gotoLogin: function() {
+            this.$store.dispatch('setWillGoToBuy', true);
+            this.$router.push({ path: '/qrcode', });
+        },
+
+        showCouponInput: function() {
+            this.isShowCouponInput = true;
+            this.$nextTick(() => {
+                this.$refs['couponInput'].focus();
+            });
+        },
 
         switchType: function(type) {
             if (type !==  this.currentType) {
@@ -395,7 +424,7 @@ export default {
         },
 
         invoice_amount: function() {
-            return Math.floor((this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount']) * 100) / 100;
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'].replace(/(0+)$/g,"").replace(/(\.)$/g, "");
         },
 
         reduce: function() {
@@ -407,7 +436,7 @@ export default {
                 !this.prices[this.currentType]['current']) {
                 return null;
             } else {
-                return Math.floor((this.prices[this.currentType]['current'][this.activeLicenseType] - this.payInfos[this.activeProductId]['invoice_amount']) * 100) / 100;
+                return Math.round((this.prices[this.currentType]['current'][this.activeLicenseType] * 100 - this.payInfos[this.activeProductId]['invoice_amount'] *100)) / 100;
             }
         },
     },

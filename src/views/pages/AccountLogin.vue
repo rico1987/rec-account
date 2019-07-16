@@ -77,8 +77,16 @@ export default {
                     }).then(() => {
                         const willGoToBuy = Store.get('willGoToBuy');
                         if (willGoToBuy) {
-                            this.$store.dispatch('setWillGoToBuy', false);
-                            this.$router.push({ path: '/buy', });
+                            this.$store.dispatch('getLicenseInfo', this.$i18n.locale)
+                                .then((data) => {
+                                    const isVip = data && data.is_activated == 1 && data.passport_license_type !== 'trial';
+                                    if (isVip) {
+                                        this.$router.push({ path: '/account-info', });
+                                    } else {
+                                        this.$store.dispatch('setWillGoToBuy', false);
+                                        this.$router.push({ path: '/buy', });
+                                    }
+                                });
                         } else {
                             this.$router.push({ path: '/account-info', });
                         }

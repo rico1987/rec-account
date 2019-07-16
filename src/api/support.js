@@ -1,6 +1,5 @@
 import qs from 'qs';
 import supportFetch from '../utils/supportFetch';
-import { InvokeDebug } from '../utils/invoke';
 
 export function getLicenseInfo(language) {
     return supportFetch.post('/account', qs.stringify({

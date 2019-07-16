@@ -166,10 +166,25 @@
     }
     
     @include e(coupon-input) {
-        height: 36px;
+        height: 34px;
         margin-top: 16px;
         border: 1px solid #404040;
         position: relative;
+        @include when(tip) {
+            border: none;
+            height: 36px;
+        }
+        >p{
+            font-size: 14px;
+            color: #d0d0d0;
+            padding-left: 12px;
+            line-height: 36px;
+            cursor: pointer;
+            display: inline-block;
+            &:hover{
+                color: white;
+            }
+        }
         .error{
             position: absolute;
             height: 100%;
@@ -235,44 +250,62 @@
 	
 	@include e(pay-container) {
 		margin-top: 12px;
-		display: flex;
+        display: flex;
+        position: relative;
 		.pay-method{
-			flex: 0.146;
+            width: 96px;
+            position: absolute;
+            left: 0;
+            z-index: 10;
 			p{
 				font-size: 14px;
 				line-height: 14px;
 				padding-top: 15px;
 				padding-bottom: 15px;
 				padding-left: 38px;
-				cursor: pointer;
+                cursor: pointer;
+                position: relative;
+                left: 1px;
 				&.weixin{
 					background: url('../../../assets/img/pay/weixin.svg') 12px center no-repeat;
                     background-size: 21%;
                     &.active {
+                        padding-top: 14px;
+                        padding-bottom: 14px;
                         color: white;
                         cursor: auto;
                         background-color: #333333;
                         background-image: url('../../../assets/img/pay/weixin-active.svg');
+                        border-width: 1px 0 1px 1px;
+                        border: 1px solid $primary;
+                        border-right: none;
                     }
 				}
 				&.alipay{
 					background: url('../../../assets/img/pay/zhifubao.svg') 12px center no-repeat;
                     background-size: 21%;
                     &.active {
+                        padding-top: 14px;
+                        padding-bottom: 14px;
                         color: white;
                         cursor: auto;
                         background-color: #333333;
                         background-image: url('../../../assets/img/pay/zhifubao-active.svg');
+                        border: 1px solid $primary;
+                        border-right: none;
                     }
 				}
 				
 			}
 		}
 		.qrcode-container{
-			flex: 0.854;
+            position: absolute;
+            left: 96px;
+            width: calc(100% - 98px);
 			height: 145px;
             background-color: #333333;
             position: relative;
+            border: 1px solid $primary;
 			.el-loading-mask{
 				background: transparent;
             }
@@ -305,6 +338,11 @@
                         display: inline-block;
                         text-align: center;
                     }
+                }
+
+                &.placeholder{
+                    cursor: pointer;
+                    background: url('../../../assets/img/pay/click-login.png') center no-repeat;
                 }
             }
             >p{

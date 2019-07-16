@@ -1,12 +1,13 @@
 import Store from '@/utils/storage';
 import { getLicenseInfo } from '@/api/support';
-import { InvokeApp, InvokeDebug } from '@/utils/invoke';
+import { InvokeApp } from '@/utils/invoke';
 
 
 const app = {
     state: {
         appInfo: {},
         licenseInfo: {},
+        isLogined: false,
         willGoToBuy: false,
     },
     mutations: {
@@ -17,12 +18,12 @@ const app = {
         SET_LICENSE_INFO: (state, data) => {
             state.licenseInfo = data;
         },
-
+        
         SET_WILL_GO_TO_BUY: (state, data) => {
             state.willGoToBuy = data;
         },
     },
-    actions: { 
+    actions: {
 
         setWillGoToBuy({ commit, }, data) {
             commit('SET_WILL_GO_TO_BUY', data);
