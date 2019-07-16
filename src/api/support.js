@@ -67,13 +67,14 @@ export function queryOrderStatus(transaction_id,) {
     });
 }
 
-export function generateOrder(coupon_code, products, identity_token) {
+export function generateOrder(coupon_code, products, identity_token, referer) {
     let postData = new FormData();
     if (coupon_code) {
         postData.append('coupon_code', coupon_code);
     }
     postData.append('type', 'attachment');
     postData.append('identity_token', identity_token);
+    postData.append('Referer', referer);
     for (let i = 0, l = products.length; i < l; i++) {
         postData.append(`product[${i}][product_id]`, products[i]['product_id']);
         postData.append(`product[${i}][quantity]`, products[i]['quantity']);

@@ -159,7 +159,6 @@ export default {
 
     created: function() {
         this.appInfo = Store.get('appInfo');
-        this.InvokeDebug(this.appInfo);
     },
 
     mounted: function() {
@@ -284,7 +283,12 @@ export default {
                     product_id: this.activeProductId,
                     quantity: 1,
                 });
-                generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token)
+
+                // 带上referer参数方便后台跟踪
+                const version = this.appInfo && this.appInfo.app_ver;
+                const apptype = this.appInfo && this.appInfo.type;
+                const referer = `apowersoft.cn/in_app_purchase?apptype=${apptype}&v=${version}`;
+                generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token, referer)
                     .then((res) => {
                         this.loading = false;
                         if (res.data.status === 1) {

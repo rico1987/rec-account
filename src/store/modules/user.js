@@ -195,6 +195,11 @@ const user = {
                 Store.remove('license_info');
                 InvokeApp('update-passport-info', {'data': {}});
                 InvokeApp('update-app-passport-info', {'data': {}});
+                // 清空所有cookie
+                const cookieKeys = Object.keys(Cookies.get());
+                for (let i = 0, l = cookieKeys.length; i < l; i++) {
+                    Cookies.remove(cookieKeys[i]);
+                }
                 resolve();
             });
         },

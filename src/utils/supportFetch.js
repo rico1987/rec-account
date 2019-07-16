@@ -2,7 +2,6 @@ import axios from 'axios';
 import config from '../config';
 import Store from './storage';
 import { isFormData } from './is';
-import { InvokeDebug } from './invoke';
 
 const service = axios.create({
     baseURL: config.supportApiBaseUrl,
@@ -50,12 +49,6 @@ service.interceptors.request.use((config) => {
                 config.data = `guid=${guid}`;
             }
         }
-    }
-
-    const version = appInfo && appInfo.app_ver;
-    const apptype = appInfo && appInfo.type;
-    if (version &&  apptype) {
-        config.headers['Referer'] = `apowersoft.cn/in_app_purchase?apptype=${apptype}&v=${version}`;
     }
     return config;
 }, error => Promise.reject(error));
