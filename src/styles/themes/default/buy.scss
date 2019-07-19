@@ -277,8 +277,6 @@
                         background-color: #333333;
                         background-image: url('../../../assets/img/pay/weixin-active.svg');
                         border-width: 1px 0 1px 1px;
-                        border: 1px solid $primary;
-                        border-right: none;
                     }
 				}
 				&.alipay{
@@ -291,8 +289,6 @@
                         cursor: auto;
                         background-color: #333333;
                         background-image: url('../../../assets/img/pay/zhifubao-active.svg');
-                        border: 1px solid $primary;
-                        border-right: none;
                     }
 				}
 				
@@ -305,7 +301,6 @@
 			height: 145px;
             background-color: #333333;
             position: relative;
-            border: 1px solid $primary;
 			.el-loading-mask{
 				background: transparent;
             }

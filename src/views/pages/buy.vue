@@ -171,13 +171,48 @@ export default {
             '18180125_Y': {},
         };
         this.getProductsInfo();
-        
+
+        const coupon = Store.get('coupon');
+        if (coupon) {
+            this.isShowCouponInput = true;
+            this.coupon = coupon;
+            Store.remove('coupon');
+        }
+
+        const activeProductId = Store.get('activeProductId');
+        if (activeProductId) {
+            this.activeProductId = activeProductId;
+            Store.remove('activeProductId');
+        }
+
+        const currentType = Store.get('currentType');
+        if (currentType) {
+            this.currentType = currentType;
+            Store.remove('currentType');
+        }
+
+        const payMethod = Store.get('payMethod');
+        if (payMethod) {
+            this.payMethod = payMethod;
+            Store.remove('payMethod');
+        }
+
+        const isValidCoupon = Store.get('isValidCoupon');
+        if (isValidCoupon) {
+            this.isValidCoupon = isValidCoupon;
+            Store.remove('isValidCoupon');
+        }
+
+        const activeLicenseType = Store.get('activeLicenseType');
+        if (activeLicenseType) {
+            this.activeLicenseType = activeLicenseType;
+            Store.remove('activeLicenseType');
+        }
+
 
         const identity_token = Store.get('identity_token');
         this.isLogined = !!identity_token;
-        if (this.isLogined) {
-            this.getTransactionId();
-        }   
+        this.getTransactionId();
     },
 
     methods: {
@@ -197,6 +232,7 @@ export default {
         switchType: function(type) {
             if (type !==  this.currentType) {
                 this.currentType = type;
+                Store.set('currentType', this.currentType);
                 if (type === 'personal') {
                     this.activeProductId = '18180124_L';
                 } else {
@@ -214,6 +250,7 @@ export default {
 		switchPayMethod: function(method) {
             if (method !== this.payMethod) {
                 this.payMethod = method;
+                Store.set('payMethod', this.payMethod);
                  if (this.coupon) {
                     this.useCoupon();
                 } else {
@@ -224,8 +261,10 @@ export default {
         
         setActiveProduct: function(id, licenseType) {
             this.activeLicenseType = licenseType;
+            Store.set('activeLicenseType', this.activeLicenseType);
             if (id !== this.activeProductId) {
                 this.activeProductId = id;
+                Store.set('activeProductId', this.activeProductId);
                  if (this.coupon) {
                     this.useCoupon();
                 } else {
@@ -388,6 +427,8 @@ export default {
                 return;
             }
 
+            Store.set('coupon', this.coupon);
+
             const identity_token = Store.get('identity_token');
             const products = [];
             products.push({
@@ -403,6 +444,7 @@ export default {
                         this.couponErrorMessage = '无效优惠券';
                         this.isValidCoupon = false;
                     }
+                    Store.set('isValidCoupon', this.isValidCoupon);
                     this.validCouponLoading = false;
                     this.getTransactionId();
                 });

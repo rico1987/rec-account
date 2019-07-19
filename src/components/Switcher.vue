@@ -24,9 +24,9 @@ export default {
         },
         bubbleText: function() {
             if (this.$route.path === '/qrcode') {
-                return '使用其他方式登录';
+                return '账号登陆';
             }
-            return '微信扫码登录';
+            return '微信登陆';
         },
     },
 

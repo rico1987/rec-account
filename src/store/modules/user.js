@@ -189,10 +189,7 @@ const user = {
                 commit('SET_IDENTITY_TOKEN', '');
                 commit('SET_USER_INFO', {});
                 commit('SET_LICENSE_INFO', {});
-                Store.remove('api_token');
-                Store.remove('identity_token');
-                Store.remove('userInfo');
-                Store.remove('license_info');
+                Store.clear();
                 InvokeApp('update-passport-info', {'data': {}});
                 InvokeApp('update-app-passport-info', {'data': {}});
                 // 清空所有cookie

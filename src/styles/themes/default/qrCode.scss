@@ -13,12 +13,12 @@
         h2 {
             font-size: 16px;
             text-align: center;
-            margin: 80px 0 28px;
+            margin: 60px 0 28px;
         }
 
         @include e(qr-code) {
-            width: 124px;
-            height: 124px;
+            width: 156px;
+            height: 156px;
             margin: 0 auto;
             border: 2px solid #aaaaaa;
             background-color: white;
