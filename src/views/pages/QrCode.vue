@@ -2,7 +2,7 @@
     <div class="account-qr-code">
         <Switcher class="account-qr-code__switcher"></Switcher>
         <div class="account-qr-code__container">
-            <h2>微信登陆</h2>
+            <h2>微信登录</h2>
             <div class="account-qr-code__qr-code" v-loading.lock="loading">
                 <img :src="qrcodeUrl" />
             </div>

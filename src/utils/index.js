@@ -370,7 +370,7 @@ export function getDomain(lang) {
     return `https://www.apowersoft${dotcom}`;
 }
 
-// 根据identity_token最后一位判断登陆来源
+// 根据identity_token最后一位判断登录来源
 // * 1 手机验证码
 // * 2 手机密码
 // * 3 邮箱验证码

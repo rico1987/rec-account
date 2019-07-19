@@ -44,7 +44,7 @@ const user = {
             });
         },
 
-        // 账号密码登陆
+        // 账号密码登录
         LoginByUsername({ commit, }, loginInfo) {
             const account = loginInfo.account.trim();
             return new Promise((resolve, reject) => {
@@ -72,7 +72,7 @@ const user = {
                 });
             });
         },
-        // 免密登陆
+        // 免密登录
         PasswordLessLogin({ commit, }, loginInfo) {
             return new Promise((resolve, reject) => {
                 passwordLessLogin(loginInfo).then((response) => {
@@ -201,7 +201,7 @@ const user = {
             });
         },
 
-        // token登陆
+        // token登录
         LoginByToken({ commit, }, loginInfo) {
             return new Promise((resolve, reject) => {
                 loginByToken(loginInfo).then((response) => {
