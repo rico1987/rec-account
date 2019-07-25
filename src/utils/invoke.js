@@ -64,6 +64,7 @@ export function InvokeDebug(data) {
     InvokeApp('debug', {
         data: JSON.stringify(data),
     });
+    console.log(data);
 }
 
 export function openUrl(url) {

@@ -93,7 +93,7 @@
 <script>
 import axios from 'axios';
 import { generateOrder, queryOrderStatus, getLicenseInfo, queryCoupon } from '@/api/support';
-import { openUrl } from '@/utils/invoke';
+import { openUrl, InvokeDebug } from '@/utils/invoke';
 import Store from '@/utils/storage';
 const queryUrl = 'https://www.apowersoft.cn/wp/wp-admin/admin-ajax.php?action=ajax_get_info_by_pro_name&pro_name=ApowerRec';
 
@@ -128,7 +128,6 @@ export default {
     },
     data() {
         return {
-            // loading: false,
             appInfo: null,
             isLogined: false,
             isShowCouponInput: false,
@@ -295,6 +294,7 @@ export default {
         },
 
         getTransactionId: function() {
+            const self = this;
             window.clearTimeout(this.queryPayStatusTimeout);
             this.queryPayStatusTimeout = null;
             if (!this.timeoutInterval) {
@@ -314,7 +314,6 @@ export default {
                 !this.payInfos[this.activeProductId]['transaction_id'] ||
                 this.payInfos[this.activeProductId]['isTimeout'] ||
                 this.payInfos[this.activeProductId]['coupon'] !== this.coupon) {
-                this.loading = true;
                 this.qrcodeLoaded = false;
                 const identity_token = Store.get('identity_token');
                 const products = [];
@@ -329,7 +328,7 @@ export default {
                 const referer = `apowersoft.cn/in_app_purchase?apptype=${apptype}&v=${version}`;
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token, referer)
                     .then((res) => {
-                        this.loading = false;
+                        InvokeDebug(res)
                         if (res.data.status === 1) {
                             this.payInfos[this.activeProductId] = {
                                 'coupon': this.coupon,
@@ -344,16 +343,25 @@ export default {
                             };
                             const wxpayImage = new Image();
                             const alipayImage = new Image();
+                            
                             wxpayImage.src = this.payInfos[this.activeProductId]['wxpay_qr'];
                             wxpayImage.onload = function() {
-                                this.payInfos[this.activeProductId]['wxpay_qr_loaded'] = true;
-                                this.$forceUpdate();
-                            }.bind(this);
+                                const keys = Object.keys(self.payInfos);
+                                for (let i = 0, l = keys.length; i < l; i++) {
+                                    if (self.payInfos[keys[i]]['wxpay_qr'] === this.src) {
+                                        self.payInfos[keys[i]]['wxpay_qr_loaded'] = true;
+                                    }
+                                }
+                            };
                             alipayImage.src = this.payInfos[this.activeProductId]['alipay_qr'];
                             alipayImage.onload = function() {
-                                this.payInfos[this.activeProductId]['alipay_qr_loaded'] = true;
-                                this.$forceUpdate();
-                            }.bind(this);
+                                const keys = Object.keys(self.payInfos);
+                                for (let i = 0, l = keys.length; i < l; i++) {
+                                    if (self.payInfos[keys[i]]['alipay_qr'] === this.src) {
+                                        self.payInfos[keys[i]]['alipay_qr_loaded'] = true;
+                                    }
+                                }
+                            };
                             this.queryOrderStatus();
                         }
 

@@ -2,6 +2,7 @@ import axios from 'axios';
 import config from '../config';
 import Store from './storage';
 import { isFormData } from './is';
+import { InvokeDebug } from './invoke';
 
 const service = axios.create({
     baseURL: config.supportApiBaseUrl,
@@ -14,7 +15,7 @@ service.interceptors.request.use((config) => {
     let appInfo = Store.get('appInfo');
     const product_name = appInfo && appInfo.name;
     const guid = appInfo && appInfo.guid;
-   
+    InvokeDebug(appInfo);
     if (!isFormData(config.data)) {
         if (identity_token) {
             if (config.data) {
@@ -55,6 +56,7 @@ service.interceptors.request.use((config) => {
 
 // 添加响应拦截器
 service.interceptors.response.use(response => response, (error) => {
+    InvokeDebug(error);
     Promise.reject(error.message);
 });
 
