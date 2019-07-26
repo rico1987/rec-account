@@ -93,7 +93,8 @@
 <script>
 import axios from 'axios';
 import { generateOrder, queryOrderStatus, getLicenseInfo, queryCoupon } from '@/api/support';
-import { openUrl, InvokeDebug } from '@/utils/invoke';
+import { stat } from '@/api/account';
+import { openUrl } from '@/utils/invoke';
 import Store from '@/utils/storage';
 const queryUrl = 'https://www.apowersoft.cn/wp/wp-admin/admin-ajax.php?action=ajax_get_info_by_pro_name&pro_name=ApowerRec';
 
@@ -217,6 +218,8 @@ export default {
     methods: {
 
         gotoLogin: function() {
+            stat('recInSoftwarePurchase', 'buyPageLogin');
+            window.clearTimeout(this.queryPayStatusTimeout);
             this.$store.dispatch('setWillGoToBuy', true);
             this.$router.push({ path: '/qrcode', });
         },
@@ -328,7 +331,7 @@ export default {
                 const referer = `apowersoft.cn/in_app_purchase?apptype=${apptype}&v=${version}`;
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token, referer)
                     .then((res) => {
-                        InvokeDebug(res)
+                        stat('recInSoftwarePurchase', 'generateOrderSuccess');
                         if (res.data.status === 1) {
                             this.payInfos[this.activeProductId] = {
                                 'coupon': this.coupon,
@@ -343,22 +346,25 @@ export default {
                             };
                             const wxpayImage = new Image();
                             const alipayImage = new Image();
-                            
+                            stat('recInSoftwarePurchase', 'startLoadWxImage');
                             wxpayImage.src = this.payInfos[this.activeProductId]['wxpay_qr'];
                             wxpayImage.onload = function() {
                                 const keys = Object.keys(self.payInfos);
                                 for (let i = 0, l = keys.length; i < l; i++) {
                                     if (self.payInfos[keys[i]]['wxpay_qr'] === this.src) {
                                         self.payInfos[keys[i]]['wxpay_qr_loaded'] = true;
+                                        stat('recInSoftwarePurchase', 'loadWxImageSuccess');
                                     }
                                 }
                             };
+                            stat('recInSoftwarePurchase', 'startLoadAliImage');
                             alipayImage.src = this.payInfos[this.activeProductId]['alipay_qr'];
                             alipayImage.onload = function() {
                                 const keys = Object.keys(self.payInfos);
                                 for (let i = 0, l = keys.length; i < l; i++) {
                                     if (self.payInfos[keys[i]]['alipay_qr'] === this.src) {
                                         self.payInfos[keys[i]]['alipay_qr_loaded'] = true;
+                                        stat('recInSoftwarePurchase', 'loadAliImageSuccess');
                                     }
                                 }
                             };
@@ -367,7 +373,7 @@ export default {
 
                     })
                     .catch((error) => {
-                        this.InvokeDebug('ErrorMessge: 生成订单失败');
+                        stat('recInSoftwarePurchase', 'generateOrderFailed');
                         this.InvokeDebug(error);
                     });
             } else {

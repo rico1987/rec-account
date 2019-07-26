@@ -2,6 +2,7 @@ import qs from 'qs';
 import accountFetch from '../utils/accountFetch';
 import * as is from '../utils/is';
 import { objToQuery, } from '../utils/index';
+import Store from '../utils/storage';
 
 export function queryLoginState(data) {
     const postData = {
@@ -54,9 +55,6 @@ export function register(data) {
     return accountFetch.post('/users', qs.stringify(data));
 }
 
-export function changeAvatar() {
-
-}
 
 export function bindEmail(userId, email, vcode, language) {
     return accountFetch.put(`/users/${userId}/bindings/contactinfo`, qs.stringify({
@@ -84,10 +82,6 @@ export function changePassword(data) {
         password2: data.confirmPassword,
         language: data.language,
     }));
-}
-
-export function updateUserInfo() {
-
 }
 
 export function getAreaCodes(language) {
@@ -122,4 +116,16 @@ export function validateAccount(data) {
     return accountFetch.get(`validation${objToQuery(Object.assign(data, {
         brand: 'Apowersoft',
     }))}`);
+}
+
+export function stat(key, action) {
+    const appInfo = Store.get('appInfo');
+    const statData = {
+        key,
+        action,
+    };
+    if (appInfo && appInfo.guid) {
+        statData['guid'] = appInfo.guid;
+    }
+    return accountFetch.get(`static${objToQuery(statData)}`);
 }

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { login, register, resetPassword, passwordLessLogin, loginByToken, } from '@/api/account';
+import { login, register, resetPassword, passwordLessLogin, loginByToken, stat } from '@/api/account';
 import { getUnlimitedVipInfo, } from '@/api/support';
 import Store from '@/utils/storage';
 import { InvokeApp } from '@/utils/invoke';
@@ -14,6 +14,7 @@ const user = {
 
     mutations: {
         SET_API_TOKEN: (state, api_token) => {
+            stat('recInSoftwarePurchase', 'loginSuccess');
             state.api_token = api_token;
         },
         SET_IDENTITY_TOKEN: (state, identity_token) => {
