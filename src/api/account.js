@@ -3,6 +3,8 @@ import accountFetch from '../utils/accountFetch';
 import * as is from '../utils/is';
 import { objToQuery, } from '../utils/index';
 import Store from '../utils/storage';
+import axios from 'axios';
+import config from '../config';
 
 export function queryLoginState(data) {
     const postData = {
@@ -120,12 +122,7 @@ export function validateAccount(data) {
 
 export function stat(key, action) {
     const appInfo = Store.get('appInfo');
-    const statData = {
-        key,
-        action,
-    };
-    if (appInfo && appInfo.guid) {
-        statData['guid'] = appInfo.guid;
-    }
-    return accountFetch.get(`static${objToQuery(statData)}`);
+    const guid = appInfo && appInfo.guid || '';
+    axios.get(`${config.logEndpoint}&key=${key}&action=${action}&guid=${guid}`)
+        .then(() => {});
 }

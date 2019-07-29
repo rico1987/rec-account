@@ -227,13 +227,13 @@ export default {
         },
 
         openMyAccount: function() {
-            stat('recInSoftwarePurchase', 'goToWebAccount');
+            stat('rec_in_software_purchase', 'goToWebAccount');
             const identity_token = Store.get('identity_token');
             openUrl(`${getMyAccountDomain(this.$i18n.locale)}?identity_token=${identity_token}`);
         },
 
         openChangePassword: function() {
-            stat('recInSoftwarePurchase', 'goToWebAccount');
+            stat('rec_in_software_purchase', 'goToWebAccount');
             const identity_token = Store.get('identity_token');
             openUrl(`${getMyAccountDomain(this.$i18n.locale)}?init=change-password&identity_token=${identity_token}`);
         },
@@ -250,30 +250,30 @@ export default {
         },
 
         onClickBuy: function() {
-            stat('recInSoftwarePurchase', 'clickBuyButton');
+            stat('rec_in_software_purchase', 'clickBuyButton');
             this.$router.push({ path: '/buy', });
         },
 
         gotoFaq: function() {
-            stat('recInSoftwarePurchase', 'goToWebsite');
+            stat('rec_in_software_purchase', 'goToWebsite');
             const identity_token = Store.get('identity_token');
             openUrl(`${this.urls.faq}?identity_token=${identity_token}`);
         },
 
         gotoCommunity: function() {
-            stat('recInSoftwarePurchase', 'goToWebsite');
+            stat('rec_in_software_purchase', 'goToWebsite');
             const identity_token = Store.get('identity_token');
             openUrl(`${this.urls.forum}?identity_token=${identity_token}`);
         },
 
         gotoFindVip: function() {
-            stat('recInSoftwarePurchase', 'goToWebsite');
+            stat('rec_in_software_purchase', 'goToWebsite');
             const identity_token = Store.get('identity_token');
             openUrl(`${getApowersoftDomain(this.$i18n.locale)}/support/retrieve-vip/?identity_token=${identity_token}`);
         },
 
         gotoRecommended: function() {
-            stat('recInSoftwarePurchase', 'goToWebsite');
+            stat('rec_in_software_purchase', 'goToWebsite');
             const identity_token = Store.get('identity_token');
             openUrl(`${this.recommended.product_url}?identity_token=${identity_token}`);
 		},
