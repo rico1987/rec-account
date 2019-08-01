@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="account-buy__coupon-input" :class="{'is-tip': !isShowCouponInput}" v-if="!isShowCouponInput">
-            <p @click="showCouponInput()">请输入优惠码</p>
+            <p @click="showCouponInput()">使用优惠券</p>
         </div>
         <div class="account-buy__coupon-input" v-if="isShowCouponInput">
             <input ref="couponInput" type="text" v-model="coupon" placeholder="请输入优惠码" minlength="4" maxlength="10" />
@@ -218,7 +218,7 @@ export default {
     methods: {
 
         gotoLogin: function() {
-            stat('rec_in_software_purchase', 'buyPageLogin');
+            stat('rec_in_software_purchase', '购买页面触发登陆');
             window.clearTimeout(this.queryPayStatusTimeout);
             this.$store.dispatch('setWillGoToBuy', true);
             this.$router.push({ path: '/qrcode', });
@@ -329,10 +329,15 @@ export default {
                 const version = this.appInfo && this.appInfo.app_ver;
                 const apptype = this.appInfo && this.appInfo.type;
                 const referer = `apowersoft.cn/in_app_purchase?apptype=${apptype}&v=${version}`;
+                if (this.isLogined) {
+                    stat('rec_in_software_purchase', '开始生成订单');
+                }
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token, referer)
                     .then((res) => {
-                        stat('rec_in_software_purchase', 'generateOrderSuccess');
                         if (res.data.status === 1) {
+                            if (this.isLogined) { 
+                                stat('rec_in_software_purchase', '生成订单成功');
+                            }
                             this.payInfos[this.activeProductId] = {
                                 'coupon': this.coupon,
                                 'isTimeout': false,
@@ -346,34 +351,48 @@ export default {
                             };
                             const wxpayImage = new Image();
                             const alipayImage = new Image();
-                            stat('rec_in_software_purchase', 'startLoadWxImage');
+                            if (this.isLogined) {
+                                stat('rec_in_software_purchase', '开始加载微信二维码');
+                            }
                             wxpayImage.src = this.payInfos[this.activeProductId]['wxpay_qr'];
                             wxpayImage.onload = function() {
                                 const keys = Object.keys(self.payInfos);
                                 for (let i = 0, l = keys.length; i < l; i++) {
                                     if (self.payInfos[keys[i]]['wxpay_qr'] === this.src) {
                                         self.payInfos[keys[i]]['wxpay_qr_loaded'] = true;
-                                        stat('rec_in_software_purchase', 'loadWxImageSuccess');
+                                        if (self.isLogined) {
+                                            stat('rec_in_software_purchase', '加载微信二维码成功');
+                                        }
                                     }
                                 }
                             };
-                            stat('rec_in_software_purchase', 'startLoadAliImage');
+                            if (this.isLogined) {
+                                stat('rec_in_software_purchase', '开始加载支付宝二维码');
+                            }
                             alipayImage.src = this.payInfos[this.activeProductId]['alipay_qr'];
                             alipayImage.onload = function() {
                                 const keys = Object.keys(self.payInfos);
                                 for (let i = 0, l = keys.length; i < l; i++) {
                                     if (self.payInfos[keys[i]]['alipay_qr'] === this.src) {
                                         self.payInfos[keys[i]]['alipay_qr_loaded'] = true;
-                                        stat('rec_in_software_purchase', 'loadAliImageSuccess');
+                                        if (self.isLogined) {
+                                            stat('rec_in_software_purchase', '加载支付宝二维码成功');
+                                        }
                                     }
                                 }
                             };
                             this.queryOrderStatus();
+                        } else {
+                            if (this.isLogined) {
+                                stat('rec_in_software_purchase', `生成订单失败_${encodeURIComponent(JSON.stringify(res.data))}`);
+                            }
                         }
 
                     })
                     .catch((error) => {
-                        stat('rec_in_software_purchase', 'generateOrderFailed');
+                        if (this.isLogined) {
+                            stat('rec_in_software_purchase', `生成订单失败_${encodeURIComponent(JSON.stringify(error))}`);
+                        }
                         this.InvokeDebug(error);
                     });
             } else {
