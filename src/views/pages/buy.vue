@@ -22,34 +22,34 @@
                 <div class="lifetime hot" @click="setActiveProduct('18180124_L', 'l')" :class="{'active': activeProductId === '18180124_L'}">
                     <p class="title">终身</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.l}}</span><span class="original">￥{{prices.personal.original.l}}</span></p>
-                    <p class="limit"><span>2</span>台电脑</p>
+                    <!-- <p class="limit"><span>2</span>台电脑</p> -->
                 </div>
                 <div class="year" @click="setActiveProduct('18180123_Y', 'y')" :class="{'active': activeProductId === '18180123_Y'}">
                     <p class="title">年度</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.y}}</span><span class="original">￥{{prices.personal.original.y}}</span></p>
-                    <p class="limit"><span>2</span>台电脑</p>
+                    <!-- <p class="limit"><span>2</span>台电脑</p> -->
                 </div>
                 <div class="quarter" @click="setActiveProduct('18180194_Q', 'q')" :class="{'active': activeProductId === '18180194_Q'}">
                     <p class="title">季度</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.q}}</span><span class="original">￥{{prices.personal.original.q}}</span></p>
-                    <p class="limit"><span>2</span>台电脑</p>
+                    <!-- <p class="limit"><span>2</span>台电脑</p> -->
                 </div>
                 <div class="multi" @click="setActiveProduct('18180204_L', 'multi')" :class="{'active': activeProductId === '18180204_L'}">
                     <p class="title">家庭终身版</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.personal.current.multi}}</span><span class="original">￥{{prices.personal.original.multi}}</span></p>
-                    <p class="limit"><span>5</span>台电脑</p>
+                    <p class="limit"><span>5</span>人</p>
                 </div>
             </div>
             <div class="license-types business" v-if="currentType === 'business'">
                 <div class="lifetime hot" @click="setActiveProduct('18180126_L', 'l')" :class="{'active': activeProductId === '18180126_L'}">
                     <p class="title">终身</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.l}}</span><span class="original">￥{{prices.business.original.l}}</span></p>
-                    <p class="limit"><span>2</span>台电脑</p>
+                    <!-- <p class="limit"><span>2</span>台电脑</p> -->
                 </div>
                 <div class="year" @click="setActiveProduct('18180125_Y', 'y')" :class="{'active': activeProductId === '18180125_Y'}">
                     <p class="title">年度</p>
                     <p class="price" v-if="prices"><span class="currency">￥</span><span class="number">{{prices.business.current.y}}</span><span class="original">￥{{prices.business.original.y}}</span></p>
-                    <p class="limit"><span>2</span>台电脑</p>
+                    <!-- <p class="limit"><span>2</span>台电脑</p> -->
                 </div>
                 <div class="quarter" @click="gotoBuy()">
                     <p class="title">团队终身版</p>
@@ -218,7 +218,7 @@ export default {
     methods: {
 
         gotoLogin: function() {
-            stat('rec_in_software_purchase', '购买页面触发登陆');
+            stat('rec_in_software_purchase', 'buyPageLogin');
             window.clearTimeout(this.queryPayStatusTimeout);
             this.$store.dispatch('setWillGoToBuy', true);
             this.$router.push({ path: '/qrcode', });
@@ -330,13 +330,13 @@ export default {
                 const apptype = this.appInfo && this.appInfo.type;
                 const referer = `apowersoft.cn/in_app_purchase?apptype=${apptype}&v=${version}`;
                 if (this.isLogined) {
-                    stat('rec_in_software_purchase', '开始生成订单');
+                    stat('rec_in_software_purchase', 'startGenerateOrder');
                 }
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token, referer)
                     .then((res) => {
                         if (res.data.status === 1) {
                             if (this.isLogined) { 
-                                stat('rec_in_software_purchase', '生成订单成功');
+                                stat('rec_in_software_purchase', 'generateOrderSuccess');
                             }
                             this.payInfos[this.activeProductId] = {
                                 'coupon': this.coupon,
@@ -352,7 +352,7 @@ export default {
                             const wxpayImage = new Image();
                             const alipayImage = new Image();
                             if (this.isLogined) {
-                                stat('rec_in_software_purchase', '开始加载微信二维码');
+                                stat('rec_in_software_purchase', 'startLoadWxImage');
                             }
                             wxpayImage.src = this.payInfos[this.activeProductId]['wxpay_qr'];
                             wxpayImage.onload = function() {
@@ -361,13 +361,13 @@ export default {
                                     if (self.payInfos[keys[i]]['wxpay_qr'] === this.src) {
                                         self.payInfos[keys[i]]['wxpay_qr_loaded'] = true;
                                         if (self.isLogined) {
-                                            stat('rec_in_software_purchase', '加载微信二维码成功');
+                                            stat('rec_in_software_purchase', 'loadWxImageSuccess');
                                         }
                                     }
                                 }
                             };
                             if (this.isLogined) {
-                                stat('rec_in_software_purchase', '开始加载支付宝二维码');
+                                stat('rec_in_software_purchase', 'startLoadAliImage');
                             }
                             alipayImage.src = this.payInfos[this.activeProductId]['alipay_qr'];
                             alipayImage.onload = function() {
@@ -376,7 +376,7 @@ export default {
                                     if (self.payInfos[keys[i]]['alipay_qr'] === this.src) {
                                         self.payInfos[keys[i]]['alipay_qr_loaded'] = true;
                                         if (self.isLogined) {
-                                            stat('rec_in_software_purchase', '加载支付宝二维码成功');
+                                            stat('rec_in_software_purchase', 'loadAliImageSuccess');
                                         }
                                     }
                                 }
@@ -384,14 +384,14 @@ export default {
                             this.queryOrderStatus();
                         } else {
                             if (this.isLogined) {
-                                stat('rec_in_software_purchase', `生成订单失败_${encodeURIComponent(JSON.stringify(res.data))}`);
+                                stat('rec_in_software_purchase', `generateOrderSuccess_${encodeURIComponent(JSON.stringify(res.data))}`);
                             }
                         }
 
                     })
                     .catch((error) => {
                         if (this.isLogined) {
-                            stat('rec_in_software_purchase', `生成订单失败_${encodeURIComponent(JSON.stringify(error))}`);
+                            stat('rec_in_software_purchase', `generateOrderFailed_${encodeURIComponent(JSON.stringify(error))}`);
                         }
                         this.InvokeDebug(error);
                     });

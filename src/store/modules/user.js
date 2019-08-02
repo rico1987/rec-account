@@ -14,7 +14,7 @@ const user = {
 
     mutations: {
         SET_API_TOKEN: (state, api_token) => {
-            stat('rec_in_software_purchase', '登陆成功');
+            stat('rec_in_software_purchase', 'loginSuccess');
             state.api_token = api_token;
         },
         SET_IDENTITY_TOKEN: (state, identity_token) => {
