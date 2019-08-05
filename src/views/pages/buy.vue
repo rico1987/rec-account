@@ -66,10 +66,6 @@
             <span class="error" v-if="couponErrorMessage">{{couponErrorMessage}}</span>
         </div>
 		<div class="account-buy__pay-container">
-			<div class="pay-method">
-				<p class="weixin" @click="switchPayMethod('wxpay_qr')" :class="{'active': payMethod === 'wxpay_qr'}">微信</p>
-				<p class="alipay" @click="switchPayMethod('alipay_qr')" :class="{'active': payMethod === 'alipay_qr'}">支付宝</p>
-			</div>
 			<div class="qrcode-container">
                 <div class="qrcode" v-if="isLogined" v-loading.lock="!qrCodeLoaded">
                     <img v-if="qrCodeUrl" :src="qrCodeUrl" />
@@ -80,11 +76,18 @@
                 <div class="qrcode placeholder" v-if="!isLogined" @click="gotoLogin()">
                     
                 </div>
-                <p v-if="qrCodeLoaded">支付金额：
-                    <span class="currency">￥</span>
-                    <span class="mount">{{invoice_amount}}</span>
-                    <span class="reduce" v-if="reduce">(已优惠 {{reduce}}元)</span>
-                </p>
+                <div class="pay-infos" v-if="qrCodeLoaded">
+                    <p class="price">
+                        <span class="currency">￥</span>
+                        <span class="mount">{{invoice_amount}}</span>
+                        <span class="reduce" v-if="reduce">(已优惠 {{reduce}}元)</span>
+                    </p>
+                    <p class="use">使用支付宝、微信扫码支付</p>
+                    <p class="icon">
+                        <span class="weixin"></span>
+                        <span class="alipay"></span>
+                    </p>
+                </div>
 			</div>
 		</div>
     </div>
@@ -139,7 +142,6 @@ export default {
             productInfo: null,
             prices: null,
 			currentType: 'personal',  // 'personal', 'business'
-            payMethod: 'wxpay_qr', // 'wxpay_qr', 'alipay_qr'
             activeProductId: '18180124_L',
             activeLicenseType: 'l',
             qrcodeLoaded: false,
@@ -179,35 +181,29 @@ export default {
             Store.remove('coupon');
         }
 
-        const activeProductId = Store.get('activeProductId');
-        if (activeProductId) {
-            this.activeProductId = activeProductId;
-            Store.remove('activeProductId');
-        }
+        // const activeProductId = Store.get('activeProductId');
+        // if (activeProductId) {
+        //     this.activeProductId = activeProductId;
+        //     Store.remove('activeProductId');
+        // }
 
-        const currentType = Store.get('currentType');
-        if (currentType) {
-            this.currentType = currentType;
-            Store.remove('currentType');
-        }
+        // const currentType = Store.get('currentType');
+        // if (currentType) {
+        //     this.currentType = currentType;
+        //     Store.remove('currentType');
+        // }
 
-        const payMethod = Store.get('payMethod');
-        if (payMethod) {
-            this.payMethod = payMethod;
-            Store.remove('payMethod');
-        }
+        // const isValidCoupon = Store.get('isValidCoupon');
+        // if (isValidCoupon) {
+        //     this.isValidCoupon = isValidCoupon;
+        //     Store.remove('isValidCoupon');
+        // }
 
-        const isValidCoupon = Store.get('isValidCoupon');
-        if (isValidCoupon) {
-            this.isValidCoupon = isValidCoupon;
-            Store.remove('isValidCoupon');
-        }
-
-        const activeLicenseType = Store.get('activeLicenseType');
-        if (activeLicenseType) {
-            this.activeLicenseType = activeLicenseType;
-            Store.remove('activeLicenseType');
-        }
+        // const activeLicenseType = Store.get('activeLicenseType');
+        // if (activeLicenseType) {
+        //     this.activeLicenseType = activeLicenseType;
+        //     Store.remove('activeLicenseType');
+        // }
 
 
         const identity_token = Store.get('identity_token');
@@ -248,18 +244,6 @@ export default {
                 }
             }
 		},
-		
-		switchPayMethod: function(method) {
-            if (method !== this.payMethod) {
-                this.payMethod = method;
-                Store.set('payMethod', this.payMethod);
-                 if (this.coupon) {
-                    this.useCoupon();
-                } else {
-                    this.getTransactionId();
-                }
-            }
-        },
         
         setActiveProduct: function(id, licenseType) {
             this.activeLicenseType = licenseType;
@@ -344,43 +328,33 @@ export default {
                                 'timeoutCount': this.transactionIdTimeout,
                                 'transaction_id': res.data.data.transaction_id,
                                 'invoice_amount': res.data.data.invoice_amount,
-                                'wxpay_qr_loaded': false,
-                                'alipay_qr_loaded': false,
-                                'wxpay_qr': `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${res.data.data.transaction_id}&payment_method=wxpay_qr`,
-                                'alipay_qr': `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${res.data.data.transaction_id}&payment_method=alipay_qr`,
+                                'qr_loaded': false,
+                                'qr_code': `https://support.aoscdn.com/api/buy/apowersoft?action=pay&transaction_id=${res.data.data.transaction_id}&payment_method=alipay_wxpay_qr`,
                             };
-                            const wxpayImage = new Image();
-                            const alipayImage = new Image();
+                            const qrcodeImage = new Image();
                             if (this.isLogined) {
-                                stat('rec_in_software_purchase', 'startLoadWxImage');
+                                stat('rec_in_software_purchase', 'startLoadQrCode');
                             }
-                            wxpayImage.src = this.payInfos[this.activeProductId]['wxpay_qr'];
-                            wxpayImage.onload = function() {
+                            qrcodeImage.src = this.payInfos[this.activeProductId]['qr_code'];
+                            qrcodeImage.onload = function() {
                                 const keys = Object.keys(self.payInfos);
                                 for (let i = 0, l = keys.length; i < l; i++) {
-                                    if (self.payInfos[keys[i]]['wxpay_qr'] === this.src) {
-                                        self.payInfos[keys[i]]['wxpay_qr_loaded'] = true;
-                                        if (self.isLogined) {
-                                            stat('rec_in_software_purchase', 'loadWxImageSuccess');
-                                        }
+                                    if (self.payInfos[keys[i]]['qr_code'] === this.src) {
+                                        self.payInfos[keys[i]]['qr_loaded'] = true;
                                     }
                                 }
                             };
-                            if (this.isLogined) {
-                                stat('rec_in_software_purchase', 'startLoadAliImage');
-                            }
-                            alipayImage.src = this.payInfos[this.activeProductId]['alipay_qr'];
-                            alipayImage.onload = function() {
-                                const keys = Object.keys(self.payInfos);
-                                for (let i = 0, l = keys.length; i < l; i++) {
-                                    if (self.payInfos[keys[i]]['alipay_qr'] === this.src) {
-                                        self.payInfos[keys[i]]['alipay_qr_loaded'] = true;
-                                        if (self.isLogined) {
-                                            stat('rec_in_software_purchase', 'loadAliImageSuccess');
-                                        }
+                            setTimeout(() => {
+                                if (qrcodeImage.complete) {
+                                    if (self.isLogined) {
+                                        stat('rec_in_software_purchase', 'loadQrCodeSuccess');
+                                    }
+                                } else {
+                                    if (self.isLogined) {
+                                        stat('rec_in_software_purchase', 'loadQrCodeFailed');
                                     }
                                 }
-                            };
+                            }, 2000);
                             this.queryOrderStatus();
                         } else {
                             if (this.isLogined) {
@@ -487,11 +461,11 @@ export default {
 
     computed: {
         qrCodeUrl: function() {
-            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId][this.payMethod];
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['qr_code'];
         },
 
         qrCodeLoaded: function() {
-            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId][this.payMethod + '_loaded'];
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['qr_loaded'];
         },
 
         isTimeout: function() {
@@ -503,7 +477,7 @@ export default {
         },
 
         invoice_amount: function() {
-            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'].replace(/(0+)$/g,"").replace(/(\.)$/g, "");
+            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'] && this.payInfos[this.activeProductId]['invoice_amount'].replace(/(0+)$/g,"").replace(/(\.)$/g, "");
         },
 
         reduce: function() {
@@ -515,7 +489,7 @@ export default {
                 !this.prices[this.currentType]['current']) {
                 return null;
             } else {
-                return Math.round((this.prices[this.currentType]['current'][this.activeLicenseType] * 100 - this.payInfos[this.activeProductId]['invoice_amount'] *100)) / 100;
+                return Math.round((this.prices[this.currentType]['original'][this.activeLicenseType] * 100 - this.payInfos[this.activeProductId]['invoice_amount'] *100)) / 100;
             }
         },
     },

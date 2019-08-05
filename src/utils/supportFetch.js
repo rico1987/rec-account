@@ -15,7 +15,6 @@ service.interceptors.request.use((config) => {
     let appInfo = Store.get('appInfo');
     const product_name = appInfo && appInfo.name;
     const guid = appInfo && appInfo.guid;
-    InvokeDebug(appInfo);
     if (!isFormData(config.data)) {
         if (identity_token) {
             if (config.data) {
