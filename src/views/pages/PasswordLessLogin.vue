@@ -297,7 +297,7 @@ export default {
                                 key: ele
                             })
                         });
-                        this.passwordLessLoginForm.areaCode = this.areacodes[0]['code'];
+                        this.passwordLessLoginForm.areaCode = '+86';
                     }
                 });
         },

@@ -292,7 +292,8 @@ export default {
                                 key: ele
                             })
                         });
-                        this.registerForm.areaCode = this.areacodes[0]['code'];
+                        
+                        this.registerForm.areaCode = '+86';
                     }
                 });
         },

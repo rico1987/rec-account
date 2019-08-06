@@ -86,10 +86,10 @@ export function changePassword(data) {
     }));
 }
 
-export function getAreaCodes(language) {
+export function getAreaCodes() {
     return accountFetch.get(`countrycodes${objToQuery({
         brand: 'Apowersoft',
-        language,
+        language: 'zh',
     })}`);
 }
 

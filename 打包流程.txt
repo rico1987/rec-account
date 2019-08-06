@@ -1,6 +1,7 @@
 1.rec-account打包，修改index.html里面的资源加载路径，并全部拷贝到 D:\workspace\wangxutech\windows\CommLibs\Apowersoft.CommUtilities.PassportV2\bin\Debug\PurchaseWebResource，修改版本号并提交
-2.修改D:\workspace\wangxutech\windows\CommLibs\Apowersoft.CommUtilities.PassportV2\Apowersoft.CommUtilities\PassportV2\Passport.vb 里的版本号并保存，切换到release打包
-3.打包后提交 D:\workspace\wangxutech\windows\CommLibs\Apowersoft.CommUtilities.PassportV2\bin\NET40\Release
+2.打包PurchaseWebResource并剪切到D:\workspace\wangxutech\windows\CommLibs\Apowersoft.CommUtilities.PassportV2\Apowersoft.CommUtilities\Resources
+3.修改D:\workspace\wangxutech\windows\CommLibs\Apowersoft.CommUtilities.PassportV2\Apowersoft.CommUtilities\PassportV2\Passport.vb 里的版本号并保存，切换到release打包
+4.打包后提交 D:\workspace\wangxutech\windows\CommLibs\Apowersoft.CommUtilities.PassportV2\bin\NET40\Release
 
 
 

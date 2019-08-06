@@ -67,8 +67,8 @@
         </div>
 		<div class="account-buy__pay-container">
 			<div class="qrcode-container">
-                <div class="qrcode" v-if="isLogined" v-loading.lock="!qrCodeLoaded">
-                    <img v-if="qrCodeUrl" :src="qrCodeUrl" />
+                <div class="qrcode" v-if="isLogined" v-loading.lock="!qrCodeLoaded || loadingPriceDetail">
+                    <img v-if="qrCodeUrl && !loadingPriceDetail" :src="qrCodeUrl" />
                     <div class="refresh" v-if="isTimeout && qrCodeLoaded" @click="refresh()">
                         <p>点击刷新</p>
                     </div>
@@ -76,13 +76,13 @@
                 <div class="qrcode placeholder" v-if="!isLogined" @click="gotoLogin()">
                     
                 </div>
-                <div class="pay-infos" v-if="qrCodeLoaded">
+                <div class="pay-infos" v-if="!loadingPriceDetail">
                     <p class="price">
                         <span class="currency">￥</span>
                         <span class="mount">{{invoice_amount}}</span>
                         <span class="reduce" v-if="reduce">(已优惠 {{reduce}}元)</span>
                     </p>
-                    <p class="use">使用支付宝、微信扫码支付</p>
+                    <p class="use">使用微信、支付宝扫码支付</p>
                     <p class="icon">
                         <span class="weixin"></span>
                         <span class="alipay"></span>
@@ -139,12 +139,12 @@ export default {
             coupon: '',
             validCouponLoading: false,
             isValidCoupon: false,
+            isGeneratingOrder: false,
             productInfo: null,
             prices: null,
 			currentType: 'personal',  // 'personal', 'business'
             activeProductId: '18180124_L',
             activeLicenseType: 'l',
-            qrcodeLoaded: false,
             timeoutInterval: null,
             queryPayStatusTimeout: null,
             transactionIdTimeout: 1.5 * 60 * 60, // 订单过期时间两小时，设置过期时间一个半小时
@@ -174,12 +174,12 @@ export default {
         };
         this.getProductsInfo();
 
-        const coupon = Store.get('coupon');
-        if (coupon) {
-            this.isShowCouponInput = true;
-            this.coupon = coupon;
-            Store.remove('coupon');
-        }
+        // const coupon = Store.get('coupon');
+        // if (coupon) {
+        //     this.isShowCouponInput = true;
+        //     this.coupon = coupon;
+        //     Store.remove('coupon');
+        // }
 
         // const activeProductId = Store.get('activeProductId');
         // if (activeProductId) {
@@ -301,14 +301,13 @@ export default {
                 !this.payInfos[this.activeProductId]['transaction_id'] ||
                 this.payInfos[this.activeProductId]['isTimeout'] ||
                 this.payInfos[this.activeProductId]['coupon'] !== this.coupon) {
-                this.qrcodeLoaded = false;
                 const identity_token = Store.get('identity_token');
                 const products = [];
                 products.push({
                     product_id: this.activeProductId,
                     quantity: 1,
                 });
-
+                this.isGeneratingOrder = true;
                 // 带上referer参数方便后台跟踪
                 const version = this.appInfo && this.appInfo.app_ver;
                 const apptype = this.appInfo && this.appInfo.type;
@@ -318,6 +317,7 @@ export default {
                 }
                 generateOrder(this.isValidCoupon ? this.coupon : '', products, identity_token, referer)
                     .then((res) => {
+                        this.isGeneratingOrder = false;
                         if (res.data.status === 1) {
                             if (this.isLogined) { 
                                 stat('rec_in_software_purchase', 'generateOrderSuccess');
@@ -460,6 +460,10 @@ export default {
     },
 
     computed: {
+        loadingPriceDetail: function() {
+            return this.validCouponLoading || this.isGeneratingOrder;
+        },
+
         qrCodeUrl: function() {
             return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['qr_code'];
         },
