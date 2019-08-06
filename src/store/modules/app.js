@@ -1,5 +1,6 @@
 import Store from '@/utils/storage';
 import { getLicenseInfo } from '@/api/support';
+import { getAreaCodes } from '@/api/account'; 
 import { InvokeApp } from '@/utils/invoke';
 
 
@@ -9,6 +10,7 @@ const app = {
         licenseInfo: {},
         isLogined: false,
         willGoToBuy: false,
+        areacodes: [],
     },
     mutations: {
         SET_APP_INFO: (state, data) => {
@@ -22,8 +24,34 @@ const app = {
         SET_WILL_GO_TO_BUY: (state, data) => {
             state.willGoToBuy = data;
         },
+
+        SET_AREA_CODES: (state, data) => {
+            state.areacodes = data.concat();
+        },
     },
     actions: {
+
+        getAreaCodes({ commit, }) {
+            return new Promise((resolve, reject) => {
+                getAreaCodes().then((res) => {
+                    const arr = res.data.data;
+                    const areacodes = [];
+                    if (arr) {
+                        arr.forEach((ele) => {
+                            areacodes.push({
+                                code: ele.split(':')[0],
+                                area: ele.split(':')[1],
+                                key: ele
+                            })
+                        });
+                        commit('SET_AREA_CODES', areacodes);
+                        Store.set('areacodes', areacodes);
+                    }
+                }).catch((error) => {
+                    reject(error);
+                });
+            });
+        },
 
         setWillGoToBuy({ commit, }, data) {
             commit('SET_WILL_GO_TO_BUY', data);

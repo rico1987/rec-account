@@ -281,6 +281,9 @@ export default {
         },
 
         getTransactionId: function() {
+            if (!this.isLogined) {
+                return
+            }
             const self = this;
             window.clearTimeout(this.queryPayStatusTimeout);
             this.queryPayStatusTimeout = null;
@@ -481,7 +484,13 @@ export default {
         },
 
         invoice_amount: function() {
-            return this.payInfos[this.activeProductId] && this.payInfos[this.activeProductId]['invoice_amount'] && this.payInfos[this.activeProductId]['invoice_amount'].replace(/(0+)$/g,"").replace(/(\.)$/g, "");
+            if (this.isLogined) {
+                return this.payInfos[this.activeProductId] &&
+                   this.payInfos[this.activeProductId]['invoice_amount'] &&
+                   this.payInfos[this.activeProductId]['invoice_amount'].replace(/(0+)$/g,"").replace(/(\.)$/g, "");
+            } else {
+                return this.prices && this.prices[this.currentType] && this.prices[this.currentType]['current'][this.activeLicenseType];
+            }
         },
 
         reduce: function() {
@@ -491,9 +500,13 @@ export default {
                 !this.prices ||
                 !this.prices[this.currentType] ||
                 !this.prices[this.currentType]['current']) {
-                return null;
+                if (this.prices && this.prices[this.currentType] && this.prices[this.currentType]['original']) {
+                    return Math.round((this.prices[this.currentType]['original'][this.activeLicenseType] * 100 - this.invoice_amount * 100)/100);
+                }
             } else {
-                return Math.round((this.prices[this.currentType]['original'][this.activeLicenseType] * 100 - this.payInfos[this.activeProductId]['invoice_amount'] *100)) / 100;
+                if (this.isLogined) {
+                    return Math.round((this.prices[this.currentType]['original'][this.activeLicenseType] * 100 - this.payInfos[this.activeProductId]['invoice_amount'] *100)) / 100;
+                }
             }
         },
     },

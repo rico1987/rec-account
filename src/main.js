@@ -91,6 +91,10 @@ InvokeApp('get-passport-info', {}, (res) => {
     }
 });
 
+// 获取地区码
+store.dispatch('getAreaCodes')
+    .then(() => {});
+
 // 获取传过来page参数
 let page, search = window.location.search;
 

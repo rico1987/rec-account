@@ -293,20 +293,8 @@ export default {
         },
 
         getAreaCodes: function() {
-            getAreaCodes()
-                .then((res) => {
-                    const arr = res.data.data;
-                    if (arr) {
-                        arr.forEach((ele) => {
-                            this.areacodes.push({
-                                code: ele.split(':')[0],
-                                area: ele.split(':')[1],
-                                key: ele
-                            })
-                        });
-                        this.resetPasswordForm.areaCode = this.areacodes[0]['code'];
-                    }
-                });
+            this.areacodes = Store.get('areacodes');
+            this.resetPasswordForm.areaCode = '+86';
         },
 
         switchLoginWay: function(way) {
