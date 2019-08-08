@@ -93,3 +93,14 @@ export function queryCoupon(coupon_code, products, identity_token) {
     }
     return supportFetch.post('/buy/apowersoft?action=query_coupon&nocache=1', postData);
 }
+
+
+export function activate(guid, product_name, ctoken, license_code, uid) {
+    return supportFetch.post('/client?type=6&format=json&action=activate-product', qs.stringify({
+        guid,
+        product_name,
+        ctoken,
+        license_code,
+        uid,
+    }));
+}

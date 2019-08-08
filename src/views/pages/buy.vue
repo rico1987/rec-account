@@ -262,6 +262,9 @@ export default {
         gotoBuy: function() {
 			const identity_token = Store.get('identity_token');
             openUrl(`https://www.apowersoft.cn/store/apowerrec.html?identity_token=${identity_token}`);
+            if (this.isLogined) {
+                stat('rec_in_software_purchase', 'gotoTeamEdition');
+            }
         },
 
         getProductsInfo: function() {
@@ -272,10 +275,12 @@ export default {
                         this.prices = this.productInfo && this.productInfo.payment.price;
                     } else {
                         this.$message.error('获取产品信息失败!');
+                        stat('rec_in_software_purchase', 'getProductInfoFailed');
                     }
                 })
                 .catch((error) => {
-					this.InvokeDebug('ErrorMessge: 获取产品信息失败');
+                    this.InvokeDebug('ErrorMessge: 获取产品信息失败');
+                    stat('rec_in_software_purchase', 'getProductInfoFailed');
                     this.InvokeDebug(error);
                 })
         },
@@ -361,7 +366,7 @@ export default {
                             this.queryOrderStatus();
                         } else {
                             if (this.isLogined) {
-                                stat('rec_in_software_purchase', `generateOrderSuccess_${encodeURIComponent(JSON.stringify(res.data))}`);
+                                stat('rec_in_software_purchase', `generateOrderFailed_${encodeURIComponent(JSON.stringify(res.data))}`);
                             }
                         }
 
@@ -422,6 +427,7 @@ export default {
 						user_info: {},
                     },
                 });
+                stat('rec_in_software_purchase', 'orderPaid');
                 this.$store.dispatch('setLicenseInfo', data.data.license_info);
                 this.$router.push({ path: '/account-info', });
             }
@@ -508,6 +514,7 @@ export default {
                     return Math.round((this.prices[this.currentType]['original'][this.activeLicenseType] * 100 - this.payInfos[this.activeProductId]['invoice_amount'] *100)) / 100;
                 }
             }
+            return 0;
         },
     },
 };

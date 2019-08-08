@@ -46,7 +46,10 @@
                 </el-form-item>
             </el-form>
             <div class="account-reset-password__submit-btn">
-                <p @click="submit()">重置密码</p>
+                <p @click="submit()">
+                    <span v-if="!loading">重置密码</span>
+                    <span v-if="loading" class="loading"></span>
+                </p>
             </div>
         </div>
     </div>
@@ -54,7 +57,7 @@
 
 <script>
 import Switcher from '@/components/Switcher.vue';
-import { getAreaCodes, sendVcode, validateAccount } from '@/api/account';
+import { sendVcode, validateAccount } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
 import Store from '@/utils/storage';
 
@@ -269,7 +272,6 @@ export default {
                                     errorMsg = '同一手机号码每天只能发送五次验证码';
                                 } 
                                 this.$message.error(errorMsg)
-                                this.loading = false;
                             });
                     } else {
                         let errorMsg;

@@ -15,7 +15,10 @@
                 <span @click="goto('/reset-password')">忘记密码</span>
             </div>
             <div class="account-account-login__submit-btn">
-                <p @click="submit()">登录</p>
+                <p @click="submit()">
+                    <span v-if="!loading">登录</span>
+                    <span v-if="loading" class="loading"></span>
+                </p>
             </div>
             <div class="account-account-login__links">
                 <span @click="goto('/password-less-login')">免密码登录</span>
@@ -86,11 +89,12 @@ export default {
                                         this.$store.dispatch('setWillGoToBuy', false);
                                         this.$router.push({ path: '/buy', });
                                     }
+                                    this.loading = false;
                                 });
                         } else {
                             this.$router.push({ path: '/account-info', });
-                        }
-                        this.loading = false;
+                            this.loading = false;
+                        }                       
                     }).catch((error) => {
                         let errorMsg;
                         if (error.status === -200) {
@@ -106,6 +110,7 @@ export default {
                         this.loading = false;
                     });
                 } else {
+                    this.loading = false;
                     return false;
                 }
             });

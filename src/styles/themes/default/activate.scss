@@ -1,14 +1,7 @@
 @import "../../mixins/bem.scss";
 @import "variables.scss";
 
-@include b(account-login) {
-    
-    @include e(switcher){
-        position: absolute;
-        top: 16px;
-        left: 14px;
-    }
-
+@include b(activate) {
     @include e(container) {
         width: 340px;
         margin: 0 auto;
@@ -18,36 +11,18 @@
             margin: 0 0 26px;
             color: #999999;
         }
-
-        @include e(sub-links) {
-            display: flex;
-            justify-content: space-between;
-            height: 12px;
-            font-size: 12px;
-            line-height: 12px;
+        .info{
+            font-size: 14px;
+            line-height: 20px;
             span{
+                text-decoration: underline;
+                color: $primary;
                 cursor: pointer;
-                color: white;
                 &:hover{
-                    color: $primary;
+                    color: $primary-light-2;
                 }
             }
         }
-
-        @include e(links) {
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            span{
-                color: white;
-                font-size: 12px;
-                cursor: pointer;
-                &:hover{
-                    color: $primary;
-                }
-            }
-        }
-
         @include e(submit-btn) {
             background-color: $primary;
             color: white;
@@ -77,5 +52,4 @@
             }
         }
     }
-
 }

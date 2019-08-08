@@ -68,7 +68,7 @@
                     background-color: black;
                     width: 134px;
                     height: 106px;
-					border: 3px solid $primary;
+					border: 3px solid #F7BB5A;
                     position: relative;
                     .title{
                         color: white!important;
@@ -80,7 +80,7 @@
 						width: 33px;
 						height: 35px;
 						right: 0;
-						bottom: 0;
+						bottom: -1px;
 						position: absolute;
 						background: url('../../../assets/img/corner-active.png') center no-repeat;
 						background-size: cover;

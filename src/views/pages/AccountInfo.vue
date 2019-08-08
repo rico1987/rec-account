@@ -22,7 +22,7 @@
                                 <div @click="openChangePassword()" class="menu-change-password">修改密码</div>
                             </el-dropdown-item>
                             <!-- <el-dropdown-item v-if="!isActivated">
-                                <div @click="openActivate()">Activate</div>
+                                <div @click="openActivate()" class="menu-activate">激活</div>
                             </el-dropdown-item> -->
                             <el-dropdown-item>
                                 <div @click="logout()" class="menu-logout">退出</div>
@@ -207,6 +207,7 @@ export default {
                 })
                 .catch((error) => {
                     this.$message.error(error.msg || '获取授权信息失败!');
+                    stat('rec_in_software_purchase', 'getLicenseInfoFailed');
                     this.loading = false;
                 });
         },
@@ -308,6 +309,7 @@ export default {
                 })
                 .catch((error) => {
                     this.$message.error(error.msg || '获取授权信息失败!');
+                    stat('rec_in_software_purchase', 'getLicenseInfoFailed');
                     this.isRefreshing = false;
                 });
 		},

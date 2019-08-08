@@ -46,7 +46,10 @@
                 </el-form-item>
             </el-form>
             <div class="account-register__submit-btn">
-                <p @click="submit()">注册</p>
+                <p @click="submit()">
+                    <span v-if="!loading">注册</span>
+                    <span v-if="loading" class="loading"></span>
+                </p>
             </div>
             <div class="account-register__links">
                 <span></span>
@@ -61,7 +64,7 @@
 
 <script>
 import Switcher from '@/components/Switcher.vue';
-import { getAreaCodes, sendVcode } from '@/api/account';
+import { sendVcode } from '@/api/account';
 import { isPhone, isEmail } from '@/utils/is';
 import { openUrl } from '@/utils/invoke';
 import Store from '@/utils/storage';
@@ -276,7 +279,6 @@ export default {
 						}
                     }
                     this.$message.error(errorMsg)
-                    this.loading = false;
                 });
         },
 
